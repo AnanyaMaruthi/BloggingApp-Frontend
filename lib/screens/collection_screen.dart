@@ -81,6 +81,12 @@ class _CollectionScreenState extends State<CollectionScreen>
           print("Scrolling up");
         }
       }
+       if (_controller.position.pixels == 0){
+              setState(() {
+              _changeAppbarText = false;
+           });
+
+        }
     });
   }
 
