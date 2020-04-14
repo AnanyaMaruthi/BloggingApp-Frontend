@@ -37,6 +37,7 @@ class User with ChangeNotifier {
   Future<void> followUser(String userId) async {
     _sharedPreferences = await _prefs;
     final token = _sharedPreferences.getString('token');
+    print("lalalal"+token);
     String url = baseUrl + "followers/" + userId;
     try {
       final response = await http.post(
@@ -53,6 +54,7 @@ class User with ChangeNotifier {
   Future<void> unfollowUser(String userId) async {
     _sharedPreferences = await _prefs;
     final token = _sharedPreferences.getString('token');
+    print("lalalal"+token);
     String url = baseUrl + "followers/" + userId;
     try {
       final response = await http.delete(

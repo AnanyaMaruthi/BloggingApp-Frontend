@@ -163,6 +163,7 @@ class Articles with ChangeNotifier {
     String url = baseUrl + "user/feed";
     _sharedPreferences = await _prefs;
     final token = _sharedPreferences.getString('token');
+    print("lalalal"+token);
     await http.get(
       url,
       headers: {HttpHeaders.authorizationHeader: token},

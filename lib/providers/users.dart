@@ -27,6 +27,7 @@ class Users with ChangeNotifier {
     String url = baseUrl + "user";
     _sharedPreferences = await _prefs;
     final token = _sharedPreferences.getString('token');
+    print("lalalal"+token);
     try {
       final response = await http.get(
         url,
