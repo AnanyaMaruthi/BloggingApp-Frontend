@@ -17,6 +17,7 @@ import './screens/collection_insert_screen.dart';
 import './screens/login_screen.dart';
 import './screens/user_screen.dart';
 import './screens/change_password.dart';
+import './screens/splash_screen.dart';
 
 // Providers
 import './providers/articles.dart';
@@ -52,9 +53,10 @@ class MyApp extends StatelessWidget {
         navigatorObservers: <NavigatorObserver>[routeObserver],
         title: "Blogging App",
         theme: AppTheme.lightTheme,
-        home: LoginScreen(),
+        home: SplashScreen(),
         onGenerateRoute: (RouteSettings settings) {
           var routes = <String, WidgetBuilder>{
+            SplashScreen.routeName: (context) => SplashScreen(),
             LoginScreen.routeName: (context) => LoginScreen(),
             HomeScreen.routeName: (context) => HomeScreen(),
             BookmarkScreen.routeName: (context) => BookmarkScreen(),

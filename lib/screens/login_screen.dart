@@ -4,6 +4,7 @@ import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:flutter/widgets.dart';
 import 'package:progress_indicators/progress_indicators.dart';
 import 'dart:convert';
+import 'package:shared_preferences/shared_preferences.dart';
 
 import '../providers/userAuthentication.dart';
 
@@ -12,6 +13,9 @@ import '../app_theme.dart';
 import '../screens/home_screen.dart';
 
 class LoginScreenState extends State<LoginScreen> {
+  Future<SharedPreferences> _prefs = SharedPreferences.getInstance();
+  SharedPreferences _sharedPreferences;
+
   final formKey = GlobalKey<FormState>();
   String formType = "login"; 
 
@@ -20,13 +24,16 @@ class LoginScreenState extends State<LoginScreen> {
 
   final storage = FlutterSecureStorage();
 
-  final TextEditingController _usernameController = TextEditingController();
-  final TextEditingController _emailController = TextEditingController();
-  final TextEditingController _passwordController = TextEditingController();
+  TextEditingController _usernameController;
+  TextEditingController _emailController;
+  TextEditingController _passwordController;
 
   void initState() {
      _loading = true;
      _show = false;
+     _usernameController = TextEditingController();
+     _emailController = TextEditingController();
+     _passwordController = TextEditingController();
     print("I am in login screen");
     super.initState();
   }
@@ -45,6 +52,10 @@ class LoginScreenState extends State<LoginScreen> {
     //print(payloadMap);
     await storage.write(key: "userId", value: payloadMap["user_id"].toString());
     await storage.write(key: "email", value: payloadMap["email"]);
+    _sharedPreferences = await _prefs;
+    _sharedPreferences.setString('token', token);
+    _sharedPreferences.setString("userId", payloadMap["user_id"].toString());
+    _sharedPreferences.setString("email", payloadMap["email"].toString());
   }
 
   void moveToRegister() {

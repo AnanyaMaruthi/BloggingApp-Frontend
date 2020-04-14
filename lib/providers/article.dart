@@ -6,6 +6,7 @@ import 'package:flutter/widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 import '../server_util.dart' as Server;
 
@@ -26,7 +27,8 @@ class Article with ChangeNotifier {
   String profile_image_url;
 
   static const baseUrl = Server.SERVER_IP + "/api/v1/";
-  final storage = FlutterSecureStorage();
+  Future<SharedPreferences> _prefs = SharedPreferences.getInstance();
+  SharedPreferences _sharedPreferences;
 
   Article({
     @required this.article_id,
@@ -47,7 +49,8 @@ class Article with ChangeNotifier {
 
   //Delete article
   Future<void> deleteArticle(String articleId) async {
-    final token = await storage.read(key: "token");
+    _sharedPreferences = await _prefs;
+    String token = _sharedPreferences.getString('token');
     String url = baseUrl + "articles/" + articleId;
     print(url);
     try {
@@ -66,7 +69,8 @@ class Article with ChangeNotifier {
   // Add bookmark
   Future<void> addBookmark(String articleId) async {
     String url = baseUrl + "user/bookmarks/" + articleId;
-    final token = await storage.read(key: "token");
+    _sharedPreferences = await _prefs;
+    final token = _sharedPreferences.getString('token');
     try {
       final response = await http.post(
         url,
@@ -84,7 +88,8 @@ class Article with ChangeNotifier {
   // Remove bookmark
   Future<void> removeBookmark(String articleId) async {
     String url = baseUrl + "user/bookmarks/" + articleId;
-    final token = await storage.read(key: "token");
+    _sharedPreferences = await _prefs;
+    final token = _sharedPreferences.getString('token');
     try {
       final response = await http.delete(
         url,

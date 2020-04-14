@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 import '../screens/collection_insert_screen.dart';
 import '../screens/bookmarks_screen.dart';
@@ -12,6 +13,16 @@ import '../providers/userAuthentication.dart';
 
 class MainDrawer extends StatelessWidget {
   final storage = FlutterSecureStorage();
+
+  Future<SharedPreferences> _prefs = SharedPreferences.getInstance();
+  SharedPreferences _sharedPreferences;
+
+  void _deleteToken() async{
+    _sharedPreferences = await _prefs;
+    _sharedPreferences.remove("token");
+    _sharedPreferences.remove("userId");
+    _sharedPreferences.remove("email");
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -80,6 +91,7 @@ class MainDrawer extends StatelessWidget {
               title: Text("Logout"),
               trailing: Icon(Icons.cancel),
               onTap: () {
+                _deleteToken();
                 storage.delete(key: "token");
                 Navigator.of(context).pushNamedAndRemoveUntil(
                     '/login-screen', (Route<dynamic> route) => false);
