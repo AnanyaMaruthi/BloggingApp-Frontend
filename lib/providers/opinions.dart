@@ -121,6 +121,7 @@ class Opinions with ChangeNotifier{
       throw "Failed to load replies";
     });
   }
+  
   List<Opinion> get opinions{
     return [..._opinions];
   }
