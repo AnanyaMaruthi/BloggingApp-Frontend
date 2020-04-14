@@ -3,14 +3,16 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:flutter/material.dart';
-import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:http/http.dart' as http;
 
 import '../server_util.dart' as Serverr;
 
 class User with ChangeNotifier {
   static const baseUrl = Serverr.SERVER_IP + "/api/v1/";
-  final storage = FlutterSecureStorage();
+  
+  Future<SharedPreferences> _prefs = SharedPreferences.getInstance();
+  SharedPreferences _sharedPreferences;
 
   final int user_id;
   final String email;
@@ -33,7 +35,8 @@ class User with ChangeNotifier {
   });
 
   Future<void> followUser(String userId) async {
-    final token = await storage.read(key: "token");
+    _sharedPreferences = await _prefs;
+    final token = _sharedPreferences.getString('token');
     String url = baseUrl + "followers/" + userId;
     try {
       final response = await http.post(
@@ -48,7 +51,8 @@ class User with ChangeNotifier {
   }
 
   Future<void> unfollowUser(String userId) async {
-    final token = await storage.read(key: "token");
+    _sharedPreferences = await _prefs;
+    final token = _sharedPreferences.getString('token');
     String url = baseUrl + "followers/" + userId;
     try {
       final response = await http.delete(

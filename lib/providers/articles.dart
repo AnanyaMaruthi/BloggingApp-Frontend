@@ -4,7 +4,6 @@ import 'dart:io';
 
 import 'package:flutter/widgets.dart';
 import 'package:http/http.dart' as http;
-import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:intl/intl.dart';
 
@@ -13,7 +12,10 @@ import './article.dart';
 
 class Articles with ChangeNotifier {
   static const baseUrl = Server.SERVER_IP + "/api/v1/";
-  final storage = FlutterSecureStorage();
+
+  Future<SharedPreferences> _prefs = SharedPreferences.getInstance();
+  SharedPreferences _sharedPreferences;
+
   List<Article> _articles = [];
 
   Article findById(String article_id) {
@@ -33,8 +35,9 @@ class Articles with ChangeNotifier {
   // Insert Article
   Future<String> addArticle(Map<String, dynamic> data, File image) async {
     String url = baseUrl + "articles";
-    final token = await storage.read(key: "token");
-    final userId = await storage.read(key: "userId");
+    _sharedPreferences = await _prefs;
+    final token = _sharedPreferences.getString('token');
+    final userId = _sharedPreferences.getString('userId');
 
     String articleId =
         userId.toString() + (DateTime.now().millisecondsSinceEpoch).toString();
@@ -76,7 +79,8 @@ class Articles with ChangeNotifier {
   // Update Article
   Future<String> updateArticle(Map<String, dynamic> data, File image) async {
     String url = baseUrl + "articles/" + data["article_id"];
-    final token = await storage.read(key: "token");
+    _sharedPreferences = await _prefs;
+    final token = _sharedPreferences.getString('token');
 
     DateFormat dateFormatter = new DateFormat('yyyy-MM-dd');
     String dateUpdated = dateFormatter.format(DateTime.now());
@@ -111,7 +115,8 @@ class Articles with ChangeNotifier {
 
   // Get article by ID
   Future<Article> getArticleById(String articleId) async {
-    final token = await storage.read(key: "token");
+    _sharedPreferences = await _prefs;
+    final token = _sharedPreferences.getString('token');
     String url = baseUrl + "articles/" + articleId;
     try {
       final response = await http.get(
@@ -156,7 +161,8 @@ class Articles with ChangeNotifier {
   Future<void> getFeedArticles() async {
     List<Article> fetchedArticles = [];
     String url = baseUrl + "user/feed";
-    final token = await storage.read(key: "token");
+    _sharedPreferences = await _prefs;
+    final token = _sharedPreferences.getString('token');
     await http.get(
       url,
       headers: {HttpHeaders.authorizationHeader: token},
@@ -191,8 +197,9 @@ class Articles with ChangeNotifier {
   // Get User authored articles
   Future<void> getUserArticles() async {
     List<Article> fetchedArticles = [];
-    final token = await storage.read(key: "token");
-    final userId = await storage.read(key: "userId");
+    _sharedPreferences = await _prefs;
+    final token = _sharedPreferences.getString('token');
+    final userId = _sharedPreferences.getString('userId');
 
     String url = baseUrl + "user/" + userId.toString() + "/articles";
     try {
@@ -230,7 +237,8 @@ class Articles with ChangeNotifier {
 // Get bookmarked articles
   Future<void> getBookmarkedArticles() async {
     List<Article> fetchedArticles = [];
-    final token = await storage.read(key: "token");
+    _sharedPreferences = await _prefs;
+    final token = _sharedPreferences.getString('token');
     String url = baseUrl + "user/bookmarks";
     try {
       final response = await http.get(
@@ -266,7 +274,8 @@ class Articles with ChangeNotifier {
   // Get articles of a collection
   Future<void> getCollectionArticles(String collectionId) async {
     List<Article> fetchedArticles = [];
-    final token = await storage.read(key: "token");
+    _sharedPreferences = await _prefs;
+    final token = _sharedPreferences.getString('token');
     String url = baseUrl + "collections/" + collectionId + "/articles";
     try {
       final response = await http.get(
@@ -303,7 +312,8 @@ class Articles with ChangeNotifier {
 // Search Articles
   Future<void> searchArticles(String query) async {
     List<Article> fetchedArticles = [];
-    final token = await storage.read(key: "token");
+    _sharedPreferences = await _prefs;
+    final token = _sharedPreferences.getString('token');
     String url = baseUrl + "articles?q=" + query;
     try {
       final response = await http.get(

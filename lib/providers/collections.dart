@@ -14,7 +14,9 @@ import '../models/author.dart';
 
 class Collections with ChangeNotifier {
   static const baseUrl = Server.SERVER_IP + "/api/v1/";
-  final storage = FlutterSecureStorage();
+  
+  Future<SharedPreferences> _prefs = SharedPreferences.getInstance();
+  SharedPreferences _sharedPreferences;
 
   List<Collection> _collections = [];
 
@@ -25,8 +27,9 @@ class Collections with ChangeNotifier {
   // Get User owned or authored collections
   Future<void> getUserCollections() async {
     List<Collection> fetchedCollections = [];
-    final token = await storage.read(key: "token");
-    final userId = await storage.read(key: "userId");
+    _sharedPreferences = await _prefs;
+    final token = _sharedPreferences.getString('token');
+    final userId = _sharedPreferences.getString('userId');
 
     String url = baseUrl + "user/" + userId.toString() + "/collections";
 
@@ -64,7 +67,8 @@ class Collections with ChangeNotifier {
 // Get collection by ID
 // Change name to get
   Future<Collection> fetchCollectionById(String collectionId) async {
-    final token = await storage.read(key: "token");
+    _sharedPreferences = await _prefs;
+    final token = _sharedPreferences.getString('token');
     String url = baseUrl + "collections/" + collectionId;
     try {
       final response = await http.get(
@@ -119,8 +123,9 @@ class Collections with ChangeNotifier {
   // Add new collection
   Future<String> addCollection(Map<String, dynamic> data, File image) async {
     print(data);
-    final token = await storage.read(key: "token");
-    final userId = await storage.read(key: "userId");
+    _sharedPreferences = await _prefs;
+    final token = _sharedPreferences.getString('token');
+    final userId = _sharedPreferences.getString("userId");
     String collectionId =
         userId.toString() + (DateTime.now().millisecond).toString();
     String url = baseUrl + "collections";
@@ -152,7 +157,8 @@ class Collections with ChangeNotifier {
 
 // update collection
   Future<String> updateCollection(Map<String, dynamic> data, File image) async {
-    final token = await storage.read(key: "token");
+    _sharedPreferences = await _prefs;
+    final token = _sharedPreferences.getString('token');
     String collectionId = data["collectionId"];
     String url = baseUrl + "collections/" + collectionId;
     var request = http.MultipartRequest('PATCH', Uri.parse(url));
@@ -183,7 +189,8 @@ class Collections with ChangeNotifier {
   // Search Collections
   Future<void> searchCollections(String query) async {
     List<Collection> fetchedCollections = [];
-    final token = await storage.read(key: "token");
+    _sharedPreferences = await _prefs;
+    final token = _sharedPreferences.getString('token');
 
     String url = baseUrl + "collections?q=" + query;
     print(url);

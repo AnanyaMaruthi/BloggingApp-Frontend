@@ -23,7 +23,8 @@ class Collection with ChangeNotifier {
   List<dynamic> authors;
 
   static const baseUrl = Server.SERVER_IP + "/api/v1/";
-  final storage = FlutterSecureStorage();
+  Future<SharedPreferences> _prefs = SharedPreferences.getInstance();
+  SharedPreferences _sharedPreferences;
 
   Collection({
     @required this.collection_id,
@@ -39,7 +40,8 @@ class Collection with ChangeNotifier {
   });
 
   Future<void> deleteCollection(String collectionId) async {
-    final token = await storage.read(key: "token");
+    _sharedPreferences = await _prefs;
+    final token = _sharedPreferences.getString('token');
     String url = baseUrl + "collections/" + collectionId;
     try {
       final response = await http.delete(
@@ -59,7 +61,8 @@ class Collection with ChangeNotifier {
 
   // Follow collection
   Future<void> followCollection(String collectionId) async {
-    final token = await storage.read(key: "token");
+    _sharedPreferences = await _prefs;
+    final token = _sharedPreferences.getString('token');
     String url = baseUrl + "collections/" + collectionId + "/followers";
     try {
       final response = await http.post(
@@ -76,7 +79,8 @@ class Collection with ChangeNotifier {
 
   // Unfollow collection
   Future<void> unfollowCollection(String collectionId) async {
-    final token = await storage.read(key: "token");
+    _sharedPreferences = await _prefs;
+    final token = _sharedPreferences.getString('token');
     String url = baseUrl + "collections/" + collectionId + "/followers";
     try {
       final response = await http.delete(

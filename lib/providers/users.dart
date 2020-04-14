@@ -13,7 +13,9 @@ import '../server_util.dart' as Server;
 
 class Users with ChangeNotifier {
   static const baseUrl = Server.SERVER_IP + "/api/v1/";
-  final storage = FlutterSecureStorage();
+  
+  Future<SharedPreferences> _prefs = SharedPreferences.getInstance();
+  SharedPreferences _sharedPreferences;
 
   List<User> _users = [];
 
@@ -23,7 +25,8 @@ class Users with ChangeNotifier {
 
   Future<User> getProfile() async {
     String url = baseUrl + "user";
-    final token = await storage.read(key: "token");
+    _sharedPreferences = await _prefs;
+    final token = _sharedPreferences.getString('token');
     try {
       final response = await http.get(
         url,
@@ -56,7 +59,8 @@ class Users with ChangeNotifier {
   // Change password
   Future<String> changePassword(String oldPassword, String newPassword) async {
     String url = baseUrl + "user/password";
-    final token = await storage.read(key: "token");
+    _sharedPreferences = await _prefs;
+    final token = _sharedPreferences.getString('token');
     try {
       var response = await http.patch(
         url,
@@ -76,7 +80,8 @@ class Users with ChangeNotifier {
 
   Future<User> fetchUserById(String userId) async {
     print("what is the about error");
-    final token = await storage.read(key: "token");
+    _sharedPreferences = await _prefs;
+    final token = _sharedPreferences.getString('token');
     String url = baseUrl + "users/" + userId;
     print("check" + url);
     try {
@@ -112,7 +117,8 @@ class Users with ChangeNotifier {
 
 // Update user profile
   Future<String> updateProfile(Map<String, dynamic> data, File image) async {
-    final token = await storage.read(key: "token");
+    _sharedPreferences = await _prefs;
+    final token = _sharedPreferences.getString('token');
     String url = baseUrl + "user";
     var request = http.MultipartRequest('PATCH', Uri.parse(url));
     request.headers["Authorization"] = token;
@@ -144,7 +150,8 @@ class Users with ChangeNotifier {
 
   Future<void> searchUsers(String query) async {
     List<User> fetchedUsers = [];
-    final token = await storage.read(key: "token");
+    _sharedPreferences = await _prefs;
+    final token = _sharedPreferences.getString('token');
     String url = baseUrl + "users?q=" + query;
     try {
       final response = await http.get(

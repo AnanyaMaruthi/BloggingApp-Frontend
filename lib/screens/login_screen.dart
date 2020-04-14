@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:flutter/widgets.dart';
 import 'package:progress_indicators/progress_indicators.dart';
 import 'dart:convert';
@@ -21,8 +20,6 @@ class LoginScreenState extends State<LoginScreen> {
 
   bool _loading;
   bool _show;
-
-  final storage = FlutterSecureStorage();
 
   TextEditingController _usernameController;
   TextEditingController _emailController;
@@ -45,13 +42,10 @@ class LoginScreenState extends State<LoginScreen> {
       );
 
   void _writeToken(String token) async {
-    await storage.write(key: "token", value: token);
     final tokenPayload = token.split(".");
     final payloadMap = jsonDecode(
         utf8.decode(base64Url.decode(base64Url.normalize(tokenPayload[1]))));
     //print(payloadMap);
-    await storage.write(key: "userId", value: payloadMap["user_id"].toString());
-    await storage.write(key: "email", value: payloadMap["email"]);
     _sharedPreferences = await _prefs;
     _sharedPreferences.setString('token', token);
     _sharedPreferences.setString("userId", payloadMap["user_id"].toString());
