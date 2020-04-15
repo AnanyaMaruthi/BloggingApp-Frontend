@@ -1,60 +1,96 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:bloggingapp/screens/article_screen.dart';
+import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 
 import '../providers/article.dart';
 import '../providers/articles.dart';
 
 class ArticleDeleteCard extends StatelessWidget {
-  Article _article;
+  
+   Widget build(BuildContext context) {
+    final article = Provider.of<Article>(context);
 
-  Widget build(BuildContext context) {
-    _article = Provider.of<Article>(context);
-
-    return new Card(
-      elevation: 8.0,
-      margin: new EdgeInsets.symmetric(horizontal: 10.0, vertical: 6.0),
-      child: Container(
-        decoration: BoxDecoration(),
-        child: ListTile(
-          contentPadding:
-              EdgeInsets.symmetric(horizontal: 20.0, vertical: 10.0),
-          leading: ClipOval(
-            child: Image.network(
-              _article.image_path,
-              fit: BoxFit.cover,
-              height: 50.0,
-              width: 50.0,
-            ),
-          ),
-          title: Text(
-            _article.title,
-            style: TextStyle(color: Colors.black, fontWeight: FontWeight.bold),
-          ),
-          subtitle: Text(
-            _article.date_updated.toString(),
-            style: TextStyle(
-              color: Colors.black,
-            ),
-          ),
-          trailing: IconButton(
+    return SizedBox(
+      height: 110,
+      child: GestureDetector(
+        onTap: () {
+          Navigator.of(context).pushNamed(ArticleScreen.routeName,
+              arguments: article.article_id);
+        },
+        child: Card(
+            child: Stack(
+          children: <Widget>[
+            Container(
+                margin: EdgeInsets.fromLTRB(10.0, 10.0, 0.0, 10.0),
+                child: CachedNetworkImage(
+                  imageUrl: article.image_path,
+                  placeholder: (context, url) => Image(
+                    image: AssetImage("assets/images/gradient_placeholder.png"),
+                    fit: BoxFit.cover,
+                    height: 80.0,
+                    width: 80.0,
+                  ),
+                  errorWidget: (context, url, error) => Image(
+                    image: AssetImage("assets/images/gradient_placeholder.png"),
+                    fit: BoxFit.cover,
+                    height: 80.0,
+                    width: 80.0,
+                  ),
+                  fit: BoxFit.cover,
+                  height: 80.0,
+                  width: 80.0,
+                )),
+            Container(
+                margin: EdgeInsets.fromLTRB(100.0, 10.0, 10.0, 10.0),
+                child: Stack(children: <Widget>[
+                  Text(
+                    article.title,
+                    style: TextStyle(
+                      color: Colors.black,
+                      fontWeight: FontWeight.bold,
+                      fontSize: 16,
+                    ),
+                    overflow: TextOverflow.ellipsis,
+                    maxLines: 2,
+                  ),
+                  article.date_created == null
+                      ? Text("No date")
+                      : Container(
+                          alignment: Alignment(1, 1),
+                          //margin :  EdgeInsets.fromLTRB(0.0, 0.0, 10.0, 10.0),
+                          child: Row(children: <Widget>[
+                            Expanded(
+                                child: Text(
+                              "Published by " +
+                                  article.author +
+                                  " on " +
+                                  DateFormat("dd-MM-yyyy")
+                                      .format(article.date_created),
+                              style: TextStyle(
+                                color: Colors.black,
+                                fontSize: 13,
+                              ),
+                            )),
+                            IconButton(
               icon: Icon(
                 Icons.cancel,
                 color: Theme.of(context).primaryColor,
               ),
               onPressed: () {
-                showAlert(context, _article.article_id, _article.title);
+                showAlert(context, article);
               }),
-          onTap: () {
-            Navigator.of(context).pushNamed(ArticleScreen.routeName,
-                arguments: _article.article_id);
-          },
-        ),
+              ]),
+              ),
+            ]))
+          ],
+        )),
       ),
     );
   }
 
-  showAlert(BuildContext context, article_id, title) {
+  showAlert(BuildContext context, article) {
     showDialog(
       context: context,
       builder: (BuildContext context) {
@@ -79,7 +115,7 @@ class ArticleDeleteCard extends StatelessWidget {
             ),
           ),
           content: Text("The _article titled - " +
-              title +
+              article.title +
               " will be deleted. This action cannot be undone. Confirm delete?"),
           actions: <Widget>[
             FlatButton(
@@ -92,11 +128,11 @@ class ArticleDeleteCard extends StatelessWidget {
               child: Text("DELETE"),
               textColor: Theme.of(context).colorScheme.error,
               onPressed: () {
-                _article.deleteArticle(article_id).then((_) {
+                article.deleteArticle(article.article_id).then((_) {
                   print("Article deleted");
                 });
                 Provider.of<Articles>(context)
-                    .deleteArticle(article_id)
+                    .deleteArticle(article.article_id)
                     .then((_) {
                   print("Deleted from list _article");
                 });
