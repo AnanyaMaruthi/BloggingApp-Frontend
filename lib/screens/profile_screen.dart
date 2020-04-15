@@ -15,6 +15,8 @@ import '../providers/user.dart';
 import '../providers/articles.dart';
 import '../providers/collections.dart';
 
+// TODO: Refactor
+
 class ProfileScreen extends StatefulWidget {
   static const routeName = "/profile";
   @override
@@ -189,7 +191,7 @@ class _ProfileScreenState extends State<ProfileScreen>
                           (BuildContext context, bool innerBoxIsScrolled) {
                         return <Widget>[
                           SliverAppBar(
-                            expandedHeight: 250.0,
+                            expandedHeight: 330.0,
                             floating: false,
                             pinned: true,
                             actions: <Widget>[
@@ -278,22 +280,21 @@ class _ProfileScreenState extends State<ProfileScreen>
                                           ],
                                         ),
                                       ),
-                                      // Padding(
-                                      //   padding:
-                                      //       EdgeInsets.fromLTRB(10, 10, 10, 20),
-                                      //   child: Text(
-                                      //     ' ',
-                                      //     textAlign: TextAlign.center,
-                                      //     style: TextStyle(
-                                      //       fontSize: 18.0,
-                                      //       color: Theme.of(context)
-                                      //           .colorScheme
-                                      //           .onPrimary,
-                                      //     ),
-                                      //     maxLines: 3,
-
-                                      //   ),
-                                      // ),
+                                      Padding(
+                                        padding:
+                                            EdgeInsets.fromLTRB(10, 10, 10, 20),
+                                        child: Text(
+                                          _user.about ?? ' ',
+                                          textAlign: TextAlign.center,
+                                          style: TextStyle(
+                                            fontSize: 18.0,
+                                            color: Theme.of(context)
+                                                .colorScheme
+                                                .onPrimary,
+                                          ),
+                                          maxLines: 3,
+                                        ),
+                                      ),
                                       Container(
                                         child: Padding(
                                           padding: EdgeInsets.all(16.0),
