@@ -167,22 +167,12 @@ class _ArticleScreenState extends State<ArticleScreen>
                           bottom: 5,
                         ),
                         child: Container(
-                          height: 200,
+                          // height: 200,
                           width: double.infinity,
                           child: CachedNetworkImage(
                             imageUrl: _article.image_path,
-                            placeholder: (context, url) => Image.network(
-                              "http://via.placeholder.com/640x360",
-                              fit: BoxFit.cover,
-                              height: 200,
-                              width: double.infinity,
-                            ),
-                            errorWidget: (context, url, error) => Image.network(
-                              "http://via.placeholder.com/640x360",
-                              fit: BoxFit.cover,
-                              height: 200,
-                              width: double.infinity,
-                            ),
+                            placeholder: (context, url) => null,
+                            errorWidget: (context, url, error) => null,
                             fit: BoxFit.cover,
                             height: 200,
                             width: double.infinity,
