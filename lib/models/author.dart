@@ -5,6 +5,7 @@ import 'dart:io';
 import 'package:http/http.dart' as http;
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:http/http.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 import '../server_util.dart' as Server;
 
@@ -15,7 +16,8 @@ class Author {
   final String image_url;
 
   static const baseUrl = Server.SERVER_IP + "/api/v1/";
-  static const storage = FlutterSecureStorage();
+  static Future<SharedPreferences> _prefs = SharedPreferences.getInstance();
+  static SharedPreferences _sharedPreferences;
 
   Author(this.user_id, this.username, this.email, this.image_url);
 
@@ -36,7 +38,10 @@ class Author {
 
   static Future<List<Author>> getSuggestions(String query) async {
     List<Author> fetchedAuthors = [];
-    final token = await storage.read(key: "token");
+
+    _sharedPreferences = await _prefs;
+    String token = _sharedPreferences.getString('token');
+
     String url = baseUrl + "users?prompt=" + query;
     try {
       final response = await http.get(
@@ -67,7 +72,8 @@ class Author {
   static Future<String> addAuthors(
       List<int> authors, String collectionId) async {
     // /api/v1/collections/:collectionId/authors/
-    final token = await storage.read(key: "token");
+    _sharedPreferences = await _prefs;
+    String token = _sharedPreferences.getString('token');
     String base = Server.base;
     String path = "/api/v1/collections/" + collectionId + "/authors";
     var url = Uri.http(base, path);
@@ -91,7 +97,8 @@ class Author {
   static Future<String> deleteAuthors(
       List<int> authors, String collectionId) async {
 // /api/v1/collections/:collectionId/authors/
-    final token = await storage.read(key: "token");
+    _sharedPreferences = await _prefs;
+    String token = _sharedPreferences.getString('token');
     String base = Server.base;
     String path = "/api/v1/collections/" + collectionId + "/authors";
     var url = Uri.http(base, path);
