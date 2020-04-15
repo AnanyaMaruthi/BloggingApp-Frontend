@@ -40,7 +40,7 @@ class _SplashScreenState extends State<SplashScreen> {
       child: CircleAvatar(
         radius: 110.0,
         backgroundColor: Colors.transparent,
-        child: Image.asset('assets/images/logo.png'),
+        child: Image.asset('assets/images/logo1.png'),
       ),
     );
   }
@@ -66,7 +66,9 @@ class _SplashScreenState extends State<SplashScreen> {
       backgroundColor: Color(0xfff3f7f6),
       body: Container(
         margin: const EdgeInsets.only(top: 100.0),
-        child: logo(),
+        child: Center(
+          child : logo(),
+        ),
       ),
     );
   }

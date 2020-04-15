@@ -11,12 +11,14 @@ import '../app_theme.dart';
 
 import '../screens/home_screen.dart';
 
+import '../widgets/error_dialog.dart';
+
 class LoginScreenState extends State<LoginScreen> {
   Future<SharedPreferences> _prefs = SharedPreferences.getInstance();
   SharedPreferences _sharedPreferences;
 
   final formKey = GlobalKey<FormState>();
-  String formType = "login"; 
+  String formType = "login";
 
   bool _loading;
   bool _show;
@@ -26,11 +28,11 @@ class LoginScreenState extends State<LoginScreen> {
   TextEditingController _passwordController;
 
   void initState() {
-     _loading = true;
-     _show = false;
-     _usernameController = TextEditingController();
-     _emailController = TextEditingController();
-     _passwordController = TextEditingController();
+    _loading = true;
+    _show = false;
+    _usernameController = TextEditingController();
+    _emailController = TextEditingController();
+    _passwordController = TextEditingController();
     print("I am in login screen");
     super.initState();
   }
@@ -158,18 +160,28 @@ class LoginScreenState extends State<LoginScreen> {
               var password = _passwordController.text;
               String token;
               await Provider.of<Authentication>(context)
-                  .attemptLogin(email, password).then((data){
-                    setState(() {
-                      _loading = false;
-                      token = data;
-                    });
-                  });
+                  .attemptLogin(email, password)
+                  .then((data) {
+                setState(() {
+                  _loading = false;
+                  token = data;
+                });
+              });
               if (token != null) {
                 _writeToken(token);
-                Navigator.of(context).pushReplacementNamed(HomeScreen.routeName);
+                Navigator.of(context)
+                    .pushReplacementNamed(HomeScreen.routeName);
               } else {
-                displayDialog(context, "Incorrect email or password",
-                    "No account was found matching that email and password");
+                showDialog(
+                    context: context,
+                    builder: (BuildContext context) {
+                      return ErrorDialog(
+                        errorMessage:
+                            "Incorrect email or password. No account was found matching that email and password",
+                      );
+                    });
+                // displayDialog(context, "Incorrect email or password",
+                //     "No account was found matching that email and password");
               }
             }
           },
@@ -180,8 +192,11 @@ class LoginScreenState extends State<LoginScreen> {
           textColor: Colors.indigo,
           onPressed: moveToRegister,
         ),
-        (_show==true && _loading==true)?
-          JumpingDotsProgressIndicator(fontSize: 60.0,):Text(""),
+        (_show == true && _loading == true)
+            ? JumpingDotsProgressIndicator(
+                fontSize: 60.0,
+              )
+            : Text(""),
       ];
     } else {
       return [
@@ -193,9 +208,7 @@ class LoginScreenState extends State<LoginScreen> {
           },
         ),
         Container(
-
-          child :
-           RaisedButton(
+            child: RaisedButton(
           child: Text("Create account", style: TextStyle(fontSize: 20.0)),
           textColor: Colors.white,
           //color : Colors.teal[700],
@@ -212,20 +225,28 @@ class LoginScreenState extends State<LoginScreen> {
               var username = _usernameController.text;
               List response;
               await Provider.of<Authentication>(context)
-                  .attemptSignUp(email, password, username).then((data){
-                    setState(() {
-                      _loading = false;
-                      print(data);
-                      response = data;
-                    });
-                  });
+                  .attemptSignUp(email, password, username)
+                  .then((data) {
+                setState(() {
+                  _loading = false;
+                  print(data);
+                  response = data;
+                });
+              });
               String token = response[0];
-              if(token!=null){
+              if (token != null) {
                 _writeToken(token);
-                Navigator.of(context).pushReplacementNamed(HomeScreen.routeName);
-              }else{
+                Navigator.of(context)
+                    .pushReplacementNamed(HomeScreen.routeName);
+              } else {
                 String error = response[1];
-                displayDialog(context, "Error", error);
+                showDialog(
+                    context: context,
+                    builder: (BuildContext context) {
+                      return ErrorDialog(
+                        errorMessage: error,
+                      );
+                    });
               }
             }
           },
@@ -236,8 +257,11 @@ class LoginScreenState extends State<LoginScreen> {
           textColor: Colors.indigo,
           onPressed: moveToLogin,
         ),
-        _show==true && _loading==true?
-          JumpingDotsProgressIndicator(fontSize: 60.0,):Text(""),
+        _show == true && _loading == true
+            ? JumpingDotsProgressIndicator(
+                fontSize: 60.0,
+              )
+            : Text(""),
       ];
     }
   }
@@ -248,7 +272,7 @@ class LoginScreenState extends State<LoginScreen> {
       child: CircleAvatar(
         radius: 110.0,
         backgroundColor: Colors.transparent,
-        child: Image.asset('assets/images/logo.png'),
+        child: Image.asset('assets/images/logo1.png'),
       ),
     );
   }

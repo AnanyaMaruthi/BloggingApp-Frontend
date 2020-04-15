@@ -103,7 +103,7 @@ Widget build(BuildContext context){
             // return const Center(
             //   child: const Text('gotcha'),
             // );
-               new OpinionSystem(),
+               new OpinionSystem(widget.articleId),
                   //     }
                   //   },
                   // ),
