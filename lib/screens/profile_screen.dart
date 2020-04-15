@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
-import 'package:sticky_headers/sticky_headers.dart';
 import 'package:provider/provider.dart';
 import '../route_observer.dart' as route_observer;
 
@@ -33,17 +32,17 @@ class _ProfileScreenState extends State<ProfileScreen>
   bool _errorCollections = false;
   User _user;
   TabController _tabController;
-  ScrollController _scrollViewController;
+  ScrollController _scrollController;
+  bool _sliverCollapsed = false;
 
   final routeObserver = route_observer.routeObserver;
 
   @override
   void initState() {
-    _tabController = new TabController(vsync: this, length: 2);
-    _scrollViewController = ScrollController(initialScrollOffset: 0.0);
-    _scrollViewController.addListener(() => setState(() {}));
+    _tabController = TabController(vsync: this, length: 2);
+    _scrollController = ScrollController();
+    _scrollController.addListener(_scrollListener);
     super.initState();
-    print("I am in profile page");
   }
 
   @override
@@ -62,7 +61,6 @@ class _ProfileScreenState extends State<ProfileScreen>
   @override
   void dispose() {
     _tabController.dispose();
-    _scrollViewController.dispose();
     super.dispose();
   }
 
@@ -70,6 +68,29 @@ class _ProfileScreenState extends State<ProfileScreen>
   void didPopNext() {
     _loadData();
     super.didPopNext();
+  }
+
+  _scrollListener() {
+    if (_scrollController.offset > 200 &&
+        !_scrollController.position.outOfRange) {
+      if (!_sliverCollapsed) {
+        // do what ever you want when silver is collapsing !
+        print("Collapsing");
+        // myTitle = "silver collapsed !";
+        _sliverCollapsed = true;
+        setState(() {});
+      }
+    }
+    if (_scrollController.offset <= 200 &&
+        !_scrollController.position.outOfRange) {
+      if (_sliverCollapsed) {
+        // do what ever you want when silver is expanding !
+        print("Expanding");
+        // myTitle = "silver expanded !";
+        _sliverCollapsed = false;
+        setState(() {});
+      }
+    }
   }
 
   void _loadData() {
@@ -117,95 +138,41 @@ class _ProfileScreenState extends State<ProfileScreen>
 
   @override
   Widget build(BuildContext context) {
-    var flexibleSpaceWidget = _loadingProfile == true
-        ? null
-        : new SliverAppBar(
-            expandedHeight: 60,
-            floating: false,
-            pinned: true,
-            backgroundColor: Color(0xfff3f7f6),
-            leading: new Container(),
-            bottom: PreferredSize(
-              preferredSize: Size.fromHeight(80.0),
-              child: Text(''),
-            ),
-            flexibleSpace: FlexibleSpaceBar(
-              centerTitle: false,
-              title: Row(
-                children: <Widget>[
-                  Container(
-                    //  padding: EdgeInsets.all(10),
-                    padding: EdgeInsets.fromLTRB(0, 10, 10, 10),
-                    child: CircleAvatar(
-                      backgroundColor: Color(0xee191654),
-                      backgroundImage: NetworkImage(_user.profile_image_url),
-                      radius: 60,
-                    ),
-                  ),
-                  Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: <Widget>[
-                      Container(
-                        padding: EdgeInsets.fromLTRB(0, 40, 0, 2),
-                        child: Text(
-                          _user.username,
-                          style: TextStyle(
-                              fontSize: 25.0,
-                              fontWeight: FontWeight.bold,
-                              color: Colors.black),
-                        ),
-                      ),
-                      Container(
-                        padding: EdgeInsets.fromLTRB(0, 2, 10, 10),
-                        child: Text(
-                          _user.email,
-                          style: TextStyle(
-                              fontSize: 17.0,
-                              fontWeight: FontWeight.normal,
-                              color: Colors.grey),
-                        ),
-                      ),
-                    ],
-                  )
-                ],
-              ),
-            ));
-
     return Scaffold(
-        appBar: AppBar(
-          title: Text("Profile"),
-          flexibleSpace: Container(
-            decoration: BoxDecoration(
-              gradient: LinearGradient(
-                  begin: Alignment.topLeft,
-                  end: Alignment.bottomRight,
-                  colors: [
-                    Color(0xff191654),
-                    Color(0xff43c6ac),
-                    // Color(0xff6dffe1),
-                  ]),
-            ),
-          ),
-          actions: <Widget>[
-            PopupMenuButton(
-              onSelected: (int selectedValue) {
-                if (selectedValue == 0) {
-                  Navigator.of(context)
-                      .pushNamed(ProfileEditScreen.routeName, arguments: _user);
-                } else {
-                  Navigator.of(context).pushNamed(ChangePassword.routeName);
-                }
-              },
-              icon: Icon(
-                Icons.more_vert,
-              ),
-              itemBuilder: (_) => [
-                PopupMenuItem(child: Text('Edit Profile'), value: 0),
-                PopupMenuItem(child: Text('Change Password'), value: 1),
-              ],
-            ),
-          ],
-        ),
+        // appBar: AppBar(
+        //   title: Text("Profile"),
+        //   flexibleSpace: Container(
+        //     decoration: BoxDecoration(
+        //       gradient: LinearGradient(
+        //           begin: Alignment.topLeft,
+        //           end: Alignment.bottomRight,
+        //           colors: [
+        //             Color(0xff191654),
+        //             Color(0xff43c6ac),
+        //             Color(0xff6dffe1),
+        //           ]),
+        //     ),
+        //   ),
+        //   actions: <Widget>[
+        //     PopupMenuButton(
+        //       onSelected: (int selectedValue) {
+        //         if (selectedValue == 0) {
+        //           Navigator.of(context)
+        //               .pushNamed(ProfileEditScreen.routeName, arguments: _user);
+        //         } else {
+        //           Navigator.of(context).pushNamed(ChangePassword.routeName);
+        //         }
+        //       },
+        //       icon: Icon(
+        //         Icons.more_vert,
+        //       ),
+        //       itemBuilder: (_) => [
+        //         PopupMenuItem(child: Text('Edit Profile'), value: 0),
+        //         PopupMenuItem(child: Text('Change Password'), value: 1),
+        //       ],
+        //     ),
+        //   ],
+        // ),
         body: (_errorProfile == true
             ? Center(
                 child: Text("An error occured"),
@@ -214,120 +181,264 @@ class _ProfileScreenState extends State<ProfileScreen>
                 ? SpinKitChasingDots(
                     color: Colors.teal,
                   )
-                : NestedScrollView(
-                    controller: _scrollViewController,
-                    headerSliverBuilder:
-                        (BuildContext context, bool innerBoxIsScrolled) {
-                      return <Widget>[
-                        flexibleSpaceWidget,
-                      ];
-                    },
-                    body: Column(
-                      children: <Widget>[
-                        Padding(
-                          padding: EdgeInsets.fromLTRB(5, 5, 5, 30),
-                        ),
-                        Container(
-                          child: Padding(
-                            padding: EdgeInsets.fromLTRB(10, 10, 10, 20),
-                            child: Text(
-                              _user.about ?? ' ',
-                              textAlign: TextAlign.center,
-                              style: TextStyle(fontSize: 18.0),
-                            ),
-                          ),
-                        ),
-                        StickyHeader(
-                          header: Container(
-                            child: Padding(
-                              padding: EdgeInsets.all(16.0),
-                              child: Row(
-                                children: <Widget>[
-                                  Expanded(
-                                    flex: 1,
-                                    child: Column(
-                                      children: <Widget>[
-                                        Text(
-                                          _user.followerCount.toString() +
-                                              " followers",
-                                          style: TextStyle(
-                                              fontSize: 17.0,
-                                              fontWeight: FontWeight.bold,
-                                              color: Theme.of(context)
-                                                  .primaryColor),
+                : DefaultTabController(
+                    length: 2,
+                    child: NestedScrollView(
+                      controller: _scrollController,
+                      headerSliverBuilder:
+                          (BuildContext context, bool innerBoxIsScrolled) {
+                        return <Widget>[
+                          SliverAppBar(
+                            expandedHeight: 250.0,
+                            floating: false,
+                            pinned: true,
+                            actions: <Widget>[
+                              PopupMenuButton(
+                                onSelected: (int selectedValue) {
+                                  if (selectedValue == 0) {
+                                    Navigator.of(context).pushNamed(
+                                        ProfileEditScreen.routeName,
+                                        arguments: _user);
+                                  } else {
+                                    Navigator.of(context)
+                                        .pushNamed(ChangePassword.routeName);
+                                  }
+                                },
+                                icon: Icon(
+                                  Icons.more_vert,
+                                ),
+                                itemBuilder: (_) => [
+                                  PopupMenuItem(
+                                      child: Text('Edit Profile'), value: 0),
+                                  PopupMenuItem(
+                                      child: Text('Change Password'), value: 1),
+                                ],
+                              )
+                            ],
+                            flexibleSpace: Container(
+                              decoration: BoxDecoration(
+                                gradient: LinearGradient(
+                                    begin: Alignment.centerLeft,
+                                    end: Alignment.centerRight,
+                                    colors: [
+                                      Color(0xff191654),
+                                      Color(0xff43c6ac),
+                                      // Color(0xff6dffe1),
+                                    ]),
+                              ),
+                              child: FlexibleSpaceBar(
+                                  centerTitle: false,
+                                  background: Column(
+                                    children: <Widget>[
+                                      Padding(
+                                        padding: EdgeInsets.only(top: 70),
+                                        child: Row(
+                                          children: <Widget>[
+                                            Container(
+                                              padding: EdgeInsets.all(10),
+                                              child: CircleAvatar(
+                                                backgroundColor:
+                                                    Color(0xee191654),
+                                                backgroundImage: NetworkImage(
+                                                    _user.profile_image_url),
+                                                radius: 60,
+                                              ),
+                                            ),
+                                            Column(
+                                              crossAxisAlignment:
+                                                  CrossAxisAlignment.start,
+                                              children: <Widget>[
+                                                Container(
+                                                  padding: EdgeInsets.fromLTRB(
+                                                      10, 10, 10, 2),
+                                                  child: Text(
+                                                    _user.username,
+                                                    style: TextStyle(
+                                                      fontSize: 25.0,
+                                                      fontWeight:
+                                                          FontWeight.bold,
+                                                    ),
+                                                  ),
+                                                ),
+                                                Container(
+                                                  padding: EdgeInsets.fromLTRB(
+                                                      10, 2, 10, 10),
+                                                  child: Text(
+                                                    _user.email,
+                                                    style: TextStyle(
+                                                      fontSize: 17.0,
+                                                      fontWeight:
+                                                          FontWeight.normal,
+                                                      color: Colors.white54,
+                                                    ),
+                                                  ),
+                                                ),
+                                              ],
+                                            )
+                                          ],
                                         ),
-                                      ],
-                                    ),
-                                  ),
-                                  Expanded(
-                                    flex: 1,
-                                    child: Column(
-                                      children: <Widget>[
-                                        Text(
-                                          _user.followingCount.toString() +
-                                              " following",
-                                          style: TextStyle(
-                                            fontSize: 17.0,
-                                            fontWeight: FontWeight.bold,
-                                            color:
-                                                Theme.of(context).primaryColor,
+                                      ),
+                                      // Padding(
+                                      //   padding:
+                                      //       EdgeInsets.fromLTRB(10, 10, 10, 20),
+                                      //   child: Text(
+                                      //     ' ',
+                                      //     textAlign: TextAlign.center,
+                                      //     style: TextStyle(
+                                      //       fontSize: 18.0,
+                                      //       color: Theme.of(context)
+                                      //           .colorScheme
+                                      //           .onPrimary,
+                                      //     ),
+                                      //     maxLines: 3,
+
+                                      //   ),
+                                      // ),
+                                      Container(
+                                        child: Padding(
+                                          padding: EdgeInsets.all(16.0),
+                                          child: Row(
+                                            children: <Widget>[
+                                              Expanded(
+                                                flex: 1,
+                                                child: Column(
+                                                  children: <Widget>[
+                                                    Text(
+                                                      _user.followerCount
+                                                              .toString() +
+                                                          " followers",
+                                                      style: TextStyle(
+                                                        fontSize: 17.0,
+                                                        fontWeight:
+                                                            FontWeight.bold,
+                                                        color: Theme.of(context)
+                                                            .colorScheme
+                                                            .onPrimary,
+                                                      ),
+                                                    ),
+                                                  ],
+                                                ),
+                                              ),
+                                              Expanded(
+                                                flex: 1,
+                                                child: Column(
+                                                  children: <Widget>[
+                                                    Text(
+                                                      _user.followingCount
+                                                              .toString() +
+                                                          " following",
+                                                      style: TextStyle(
+                                                        fontSize: 17.0,
+                                                        fontWeight:
+                                                            FontWeight.bold,
+                                                        color: Theme.of(context)
+                                                            .colorScheme
+                                                            .onPrimary,
+                                                      ),
+                                                    ),
+                                                  ],
+                                                ),
+                                              ),
+                                            ],
                                           ),
                                         ),
-                                      ],
-                                    ),
+                                      ),
+                                    ],
                                   ),
+                                  title: (_sliverCollapsed == true
+                                      ? Text(
+                                          _user.username,
+                                          style: TextStyle(
+                                            color: Theme.of(context)
+                                                .colorScheme
+                                                .onPrimary,
+                                            fontSize: 20,
+                                          ),
+                                        )
+                                      : null)),
+                            ),
+                          ),
+                          SliverPersistentHeader(
+                            delegate: _SliverAppBarDelegate(
+                              TabBar(
+                                indicatorColor:
+                                    Theme.of(context).colorScheme.onPrimary,
+                                controller: _tabController,
+                                tabs: [
+                                  Tab(
+                                    text: "Articles",
+                                  ),
+                                  Tab(text: "Collections"),
                                 ],
                               ),
                             ),
+                            pinned: true,
                           ),
-                          content: Container(),
-                        ),
-                        Container(
-                          decoration: BoxDecoration(
-                              color: Theme.of(context).colorScheme.primary),
-                          child: TabBar(
-                            indicatorColor:
-                                Theme.of(context).colorScheme.onPrimary,
-                            controller: _tabController,
-                            tabs: [
-                              Tab(
-                                text: "Articles",
-                              ),
-                              Tab(text: "Collections"),
-                            ],
-                          ),
-                        ),
-                        new Expanded(
-                          child: TabBarView(
-                              controller: _tabController,
-                              children: <Widget>[
-                                (_errorArticle == true
-                                    ? Center(
-                                        child: Text("An error occured"),
+                        ];
+                      },
+                      body: TabBarView(
+                          controller: _tabController,
+                          children: <Widget>[
+                            (_errorArticle == true
+                                ? Center(
+                                    child: Text("An error occured"),
+                                  )
+                                : (_loadingArticles == true
+                                    ? SpinKitDoubleBounce(
+                                        color: Colors.teal,
                                       )
-                                    : (_loadingArticles == true
-                                        ? SpinKitDoubleBounce(
-                                            color: Colors.teal,
-                                          )
-                                        : ArticlesList())),
-                                (_errorCollections == true
-                                    ? Center(
-                                        child: Text("An error occured"),
+                                    : ArticlesList())),
+                            (_errorCollections == true
+                                ? Center(
+                                    child: Text("An error occured"),
+                                  )
+                                : (_loadingCollections == true
+                                    ? SpinKitDoubleBounce(
+                                        color: Colors.teal,
                                       )
-                                    : (_loadingCollections == true
-                                        ? SpinKitDoubleBounce(
-                                            color: Colors.teal,
-                                          )
-                                        : CollectionList())),
-                              ]),
-                        )
-                      ],
+                                    : CollectionList())),
+                          ]),
                     )))));
   }
 }
 
+//Choice class
 class Choice {
   Choice({this.title, this.icon});
   String title;
   IconData icon;
+}
+
+class _SliverAppBarDelegate extends SliverPersistentHeaderDelegate {
+  _SliverAppBarDelegate(this._tabBar);
+
+  final TabBar _tabBar;
+
+  @override
+  double get minExtent => _tabBar.preferredSize.height;
+  @override
+  double get maxExtent => _tabBar.preferredSize.height;
+
+  @override
+  Widget build(
+      BuildContext context, double shrinkOffset, bool overlapsContent) {
+    return Container(
+      decoration: BoxDecoration(
+        gradient: LinearGradient(
+            begin: Alignment.centerLeft,
+            end: Alignment.centerRight,
+            colors: [
+              Color(0xff191654),
+              Color(0xff43c6ac),
+              // Color(0xff6dffe1),
+            ]),
+      ),
+      child: _tabBar,
+    );
+  }
+
+  @override
+  bool shouldRebuild(_SliverAppBarDelegate oldDelegate) {
+    return false;
+  }
 }
