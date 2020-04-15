@@ -18,12 +18,14 @@ import './screens/login_screen.dart';
 import './screens/user_screen.dart';
 import './screens/change_password.dart';
 import './screens/splash_screen.dart';
+import 'package:bloggingapp/screens/opinion_screen.dart';
 
 // Providers
 import './providers/articles.dart';
 import './providers/collections.dart';
 import './providers/users.dart';
 import './providers/userAuthentication.dart';
+import 'package:bloggingapp/providers/opinions.dart';
 
 import './route_observer.dart' as route_observer;
 import './app_theme.dart';
@@ -47,7 +49,10 @@ class MyApp extends StatelessWidget {
         ),
         ChangeNotifierProvider.value(
           value: Collections(),
-        )
+        ),
+        ChangeNotifierProvider.value(
+          value: Opinions(),
+         ),
       ],
       child: MaterialApp(
         navigatorObservers: <NavigatorObserver>[routeObserver],
@@ -83,6 +88,7 @@ class MyApp extends StatelessWidget {
             ChangePassword.routeName: (context) => ChangePassword(),
 
             UserScreen.routeName: (context) => UserScreen(settings.arguments),
+            OpinionScreen.routeName: (context) => OpinionScreen(settings.arguments), 
           };
           WidgetBuilder builder = routes[settings.name];
           return MaterialPageRoute(builder: (ctx) => builder(ctx));
