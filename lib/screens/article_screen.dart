@@ -204,6 +204,30 @@ class _ArticleScreenState extends State<ArticleScreen>
                       //   ),
                       // ),
                       Authorcard(),
+                       Padding(
+              padding: const EdgeInsets.all(10),
+                  child: Container(
+                    child: SizedBox(
+                      width: double.infinity,
+                      child: 
+                MaterialButton(
+                  color: Colors.teal,
+                  padding: EdgeInsets.fromLTRB(
+                                  2.0, 5.0, 2.0, 5.0),
+                              onPressed: () {
+                                Navigator.of(context).pushNamed(OpinionScreen.routeName, arguments: _article.article_id);
+                                print("hello");
+                                },
+                              child: Text("Opinions",
+                                  textAlign: TextAlign.center,
+                                  style: TextStyle(
+                                    color: Colors.white,
+                                    fontSize: 15,
+                                  )),
+                ),
+                ),
+                ),
+               
                     ],
                   ),
                 ))),
