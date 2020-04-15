@@ -34,6 +34,7 @@ class _ArticleScreenState extends State<ArticleScreen>
   bool _error = false;
   bool _isInit = true;
   NotusDocument _content;
+  List<String> _tags = [];
   final routeObserver = route_observer.routeObserver;
 
   @override
@@ -69,6 +70,7 @@ class _ArticleScreenState extends State<ArticleScreen>
         _loading = false;
         _article = article;
         _content = _loadContent();
+        loadTags();
       });
     }).catchError((errorMessage) {
       showDialog(
@@ -83,6 +85,42 @@ class _ArticleScreenState extends State<ArticleScreen>
       });
     });
   }
+
+void loadTags(){
+     if (_article.tags == "") {
+        _tags = [];
+    } else {
+        _tags = _article.tags.split(",");
+
+      }
+      print(_tags);
+  }
+
+  showTags() {
+    return
+    Container(
+      child: 
+       Wrap(
+        spacing: 6.0,
+        runSpacing: 6.0,
+        crossAxisAlignment: WrapCrossAlignment.start,
+        alignment: WrapAlignment.start,
+        children: List<Widget>.generate(_tags.length, (int index) {
+          return FilterChip(
+            padding: EdgeInsets.all(2),
+            label: Text(_tags[index],style: TextStyle(
+                                      color: Colors.black,
+                                      fontSize: 14,
+                                    ) ),
+            backgroundColor: Colors.transparent,
+            shape: StadiumBorder(side: BorderSide(color: Color(0xFF53517f), width: 2.0,),),
+            onSelected: (bool value) {},
+          );
+  
+        }),
+       ),
+        );
+  }  
 
 // Rename
   NotusDocument _loadContent() {
@@ -196,6 +234,7 @@ class _ArticleScreenState extends State<ArticleScreen>
                       //     ],
                       //   ),
                       // ),
+                      showTags(),
                       Authorcard(),
                       Padding(
                         padding: const EdgeInsets.all(10),
