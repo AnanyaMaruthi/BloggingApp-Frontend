@@ -6,6 +6,7 @@ import 'package:flutter/widgets.dart';
 import 'package:http/http.dart' as http;
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:intl/intl.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:flutter/material.dart';
 
 import '../server_util.dart' as Server;
@@ -13,14 +14,17 @@ import './opinion.dart';
 
 class Opinions with ChangeNotifier{
   static const baseUrl = Server.SERVER_IP + "/api/v1/";
-  final storage = FlutterSecureStorage();
+  Future<SharedPreferences> _prefs = SharedPreferences.getInstance();
+  SharedPreferences _sharedPreferences;
+
   List<Opinion> _opinions = [];
   List<Opinion> _replies = [];
 
   // Get Opinions of an article
   Future<void> getOpinions(String articleId) async {
     List<Opinion> fetchedOpinions = [];
-    final token = await storage.read(key: "token");
+    _sharedPreferences = await _prefs;
+    String token = _sharedPreferences.getString('token');
     String url = baseUrl + "articles/" + articleId + "/opinions";
     try {
       final response = await http.get(
@@ -55,44 +59,46 @@ class Opinions with ChangeNotifier{
   }
 
   // Add new Opinion
-  Future<String> addOpinion(Map<String, dynamic> data) async {
-    print(data);
-    final token = await storage.read(key: "token");
-    final userId = await storage.read(key: "userId");
-    final articleId = await storage.read(key: "articleId");
+  // Future<String> addOpinion(Map<String, dynamic> data) async {
+  //   print(data);
+  //   _sharedPreferences = await _prefs;
+  //   String token = _sharedPreferences.getString('token');
+  //   final userId = await storage.read(key: "userId");
+  //   final articleId = await storage.read(key: "articleId");
 
-    String url = baseUrl +  "articles/" + articleId + "opinions";
-    DateFormat dateFormatter = new DateFormat('yyyy-MM-dd');
-    String dateCreated = dateFormatter.format(DateTime.now());
-    String isReply= (data["is_reply"]=="1"?"1":"0");
-    var request = http.MultipartRequest('POST', Uri.parse(url));
+  //   String url = baseUrl +  "articles/" + articleId + "opinions";
+  //   DateFormat dateFormatter = new DateFormat('yyyy-MM-dd');
+  //   String dateCreated = dateFormatter.format(DateTime.now());
+  //   String isReply= (data["is_reply"]=="1"?"1":"0");
+  //   var request = http.MultipartRequest('POST', Uri.parse(url));
 
-    request.headers["Authorization"] = token;
-    request.fields["user_id"] = userId;
-    request.fields["article_id"] = articleId;
-    request.fields["content"] = data["content"];
-    request.fields["date_created"] = dateCreated;
-    request.fields["is_reply"]=isReply;
-    try {
-      dynamic response = await request.send();
-      response = await response.stream.bytesToString();
-      final responseJson = json.decode(response);
-      if (responseJson["error"] == false) {
-        return "Successfully inserted opinion";
-      } else {
-        print(responseJson["message"]);
-        throw "Failed to insert opinion";
-      }
-    } catch (error) {
-      throw "Failed to insert opinion";
-    }
-  }
+  //   request.headers["Authorization"] = token;
+  //   request.fields["user_id"] = userId;
+  //   request.fields["article_id"] = articleId;
+  //   request.fields["content"] = data["content"];
+  //   request.fields["date_created"] = dateCreated;
+  //   request.fields["is_reply"]=isReply;
+  //   try {
+  //     dynamic response = await request.send();
+  //     response = await response.stream.bytesToString();
+  //     final responseJson = json.decode(response);
+  //     if (responseJson["error"] == false) {
+  //       return "Successfully inserted opinion";
+  //     } else {
+  //       print(responseJson["message"]);
+  //       throw "Failed to insert opinion";
+  //     }
+  //   } catch (error) {
+  //     throw "Failed to insert opinion";
+  //   }
+  // }
 
   // Get All replies of an Opinion
   Future<void> getAllReplies(String articleId, String opinionId) async {
     List<Opinion> fetchedReplies = [];
     String url = baseUrl +  "articles/" + articleId + "/opinions" + opinionId;
-    final token = await storage.read(key: "token");
+    _sharedPreferences = await _prefs;
+    String token = _sharedPreferences.getString('token');
     await http.get(
       url,
       headers: {HttpHeaders.authorizationHeader: token},

@@ -15,97 +15,85 @@ class ArticlePreviewCard extends StatelessWidget {
       height: 110,
       child: GestureDetector(
         onTap: () {
-              Navigator.of(context).pushNamed(ArticleScreen.routeName,
-                  arguments: article.article_id);
+          Navigator.of(context).pushNamed(ArticleScreen.routeName,
+              arguments: article.article_id);
         },
-        child:Card(
-        child : new Stack(
-          children : <Widget>[
+        child: Card(
+            child: new Stack(
+          children: <Widget>[
             Container(
-              margin : new EdgeInsets.fromLTRB(10.0, 10.0, 0.0, 10.0),
-            child :ClipOval(
-              child: CachedNetworkImage(
-                imageUrl: article.image_path,
-                placeholder: (context, url) => Image.network(
-                  "http://via.placeholder.com/640x360",
-                  fit: BoxFit.cover,
-                  height: 80.0,
-                  width: 80.0,
+                margin: new EdgeInsets.fromLTRB(10.0, 10.0, 0.0, 10.0),
+                child: CircleAvatar(
+                      backgroundColor: Color(0xee191654),
+                      backgroundImage: NetworkImage(article.image_path),
+                      radius: 40,
+                    ),
                 ),
-                errorWidget: (context, url, error) => Icon(Icons.error),
-                fit: BoxFit.cover,
-                height: 80.0,
-                width: 80.0,
-              ),
-            )),
             Container(
-              margin : new EdgeInsets.fromLTRB(100.0, 10.0, 10.0, 10.0),
-              child:new Stack(
-             
-                children : <Widget>[
+                margin: new EdgeInsets.fromLTRB(100.0, 10.0, 10.0, 10.0),
+                child: new Stack(children: <Widget>[
                   Text(
-              article.title,
-              style: TextStyle(
-                color: Colors.black,
-                fontWeight: FontWeight.bold,
-                fontSize: 16,
-              ),
-              overflow: TextOverflow.ellipsis,
-              maxLines: 2,
-            ),
+                    article.title,
+                    style: TextStyle(
+                      color: Colors.black,
+                      fontWeight: FontWeight.bold,
+                      fontSize: 16,
+                    ),
+                    overflow: TextOverflow.ellipsis,
+                    maxLines: 2,
+                  ),
                   article.date_created == null
-                ? Text("No date")
-                : Container(
-                  alignment : Alignment(1, 1),
-                  //margin : new EdgeInsets.fromLTRB(0.0, 0.0, 10.0, 10.0),
-                  child : Row(children: <Widget>[
-                    Expanded(child:Text(
-                      "Published by " +
-                          article.author +
-                          " on " +
-                          DateFormat("dd-MM-yyyy").format(article.date_created),
-                      style: TextStyle(
-                        color: Colors.black,
-                        fontSize: 13,
-                      ),
-                    )),
-                    (article.is_bookmarked
-                        ? IconButton(
-                            icon: Icon(
-                              Icons.bookmark,
-                              size: 19,
-                              color: Theme.of(context).primaryColor,
-                            ),
-                            onPressed: () {
-                              article
-                                  .removeBookmark(article.article_id)
-                                  .then((_) {
-                                print("Bookmark removed");
-                              });
-                            },
-                          )
-                        : IconButton(
-                            icon: Icon(
-                              Icons.bookmark_border,
-                              size: 19,
-                              color: Theme.of(context).primaryColor,
-                            ),
-                            onPressed: () {
-                              article.addBookmark(article.article_id).then((_) {
-                                print("Bookmark added");
-                              });
-                            },
-                          )),
-                  ]),),
-
-                ]
-              )
-            )
-
-
+                      ? Text("No date")
+                      : Container(
+                          alignment: Alignment(1, 1),
+                          //margin : new EdgeInsets.fromLTRB(0.0, 0.0, 10.0, 10.0),
+                          child: Row(children: <Widget>[
+                            Expanded(
+                                child: Text(
+                              "Published by " +
+                                  article.author +
+                                  " on " +
+                                  DateFormat("dd-MM-yyyy")
+                                      .format(article.date_created),
+                              style: TextStyle(
+                                color: Colors.black,
+                                fontSize: 13,
+                              ),
+                            )),
+                            (article.is_bookmarked
+                                ? IconButton(
+                                    icon: Icon(
+                                      Icons.bookmark,
+                                      size: 19,
+                                      color: Theme.of(context).primaryColor,
+                                    ),
+                                    onPressed: () {
+                                      article
+                                          .removeBookmark(article.article_id)
+                                          .then((_) {
+                                        print("Bookmark removed");
+                                      });
+                                    },
+                                  )
+                                : IconButton(
+                                    icon: Icon(
+                                      Icons.bookmark_border,
+                                      size: 19,
+                                      color: Theme.of(context).primaryColor,
+                                    ),
+                                    onPressed: () {
+                                      article
+                                          .addBookmark(article.article_id)
+                                          .then((_) {
+                                        print("Bookmark added");
+                                      });
+                                    },
+                                  )),
+                          ]),
+                        ),
+                ]))
           ],
-        )
-      ),
+        )),
       ),
     );
   }

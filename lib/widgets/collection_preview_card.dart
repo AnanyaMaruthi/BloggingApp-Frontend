@@ -18,26 +18,31 @@ class CollectionPreviewCard extends StatelessWidget {
         child: ListTile(
           contentPadding:
               EdgeInsets.symmetric(horizontal: 20.0, vertical: 10.0),
-          leading: ClipOval(
-            child: CachedNetworkImage(
-              imageUrl: _collection.image_url,
-              placeholder: (context, url) => Image.network(
-                "http://via.placeholder.com/640x360",
-                fit: BoxFit.cover,
-                height: 50.0,
-                width: 50.0,
-              ),
-              errorWidget: (context, url, error) => Image.network(
-                "http://via.placeholder.com/640x360",
-                fit: BoxFit.cover,
-                height: 50.0,
-                width: 50.0,
-              ),
-              fit: BoxFit.cover,
-              height: 50.0,
-              width: 50.0,
-            ),
+          leading: CircleAvatar(
+            backgroundColor: Color(0xee191654),
+            backgroundImage: NetworkImage(_collection.image_url),
+            radius: 40,
           ),
+          // ClipOval(
+          //   child: CachedNetworkImage(
+          //     imageUrl: _collection.image_url,
+          //     placeholder: (context, url) => Image.network(
+          //       "http://via.placeholder.com/640x360",
+          //       fit: BoxFit.cover,
+          //       height: 50.0,
+          //       width: 50.0,
+          //     ),
+          //     errorWidget: (context, url, error) => Image.network(
+          //       "http://via.placeholder.com/640x360",
+          //       fit: BoxFit.cover,
+          //       height: 50.0,
+          //       width: 50.0,
+          //     ),
+          //     fit: BoxFit.cover,
+          //     height: 50.0,
+          //     width: 50.0,
+          //   ),
+          // ),
           title: Text(
             _collection.collection_name,
             style: TextStyle(
