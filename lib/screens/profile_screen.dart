@@ -62,7 +62,7 @@ class _ProfileScreenState extends State<ProfileScreen>
   @override
   void dispose() {
     _tabController.dispose();
-     _scrollViewController.dispose();
+    _scrollViewController.dispose();
     super.dispose();
   }
 
@@ -117,67 +117,62 @@ class _ProfileScreenState extends State<ProfileScreen>
 
   @override
   Widget build(BuildContext context) {
-
-    var flexibleSpaceWidget = _loadingProfile==true? null : new SliverAppBar(
-       expandedHeight: 60,
-              floating: false,
-              pinned: true,
-              backgroundColor: Color(0xfff3f7f6),
-              leading: new Container(),
-               bottom: PreferredSize(                      
-                preferredSize: Size.fromHeight(80.0),      
-               child: Text(''),
-               ),
-
-
-              flexibleSpace: FlexibleSpaceBar(
-                  centerTitle: false,
-                   title: Row(
-                        children: <Widget>[
-                          Container(
-                            //  padding: EdgeInsets.all(10),
-                            padding: EdgeInsets.fromLTRB(0, 10, 10, 10),
-                            child: CircleAvatar(
-                              backgroundColor: Color(0xee191654),
-                              backgroundImage:
-                                  NetworkImage(_user.profile_image_url),
-                              radius: 60,
-                            ),
-                          ),
-                          Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: <Widget>[
-                              Container(
-                                padding: EdgeInsets.fromLTRB(0, 40, 0, 2),
-                                child: Text(
-                                  _user.username,
-                                  style: TextStyle(
-                                    fontSize: 25.0,
-                                    fontWeight: FontWeight.bold,
-                                    color: Colors.black
-                                  ),
-                                ),
-                              ),
-                              Container(
-                                padding: EdgeInsets.fromLTRB(0, 2, 10, 10),
-                                child: Text(
-                                  _user.email,
-                                  style: TextStyle(
-                                      fontSize: 17.0,
-                                      fontWeight: FontWeight.normal,
-                                      color: Colors.grey),
-                                ),
-                              ),
-                            ],
-                          )
-                        ],
+    var flexibleSpaceWidget = _loadingProfile == true
+        ? null
+        : new SliverAppBar(
+            expandedHeight: 60,
+            floating: false,
+            pinned: true,
+            backgroundColor: Color(0xfff3f7f6),
+            leading: new Container(),
+            bottom: PreferredSize(
+              preferredSize: Size.fromHeight(80.0),
+              child: Text(''),
+            ),
+            flexibleSpace: FlexibleSpaceBar(
+              centerTitle: false,
+              title: Row(
+                children: <Widget>[
+                  Container(
+                    //  padding: EdgeInsets.all(10),
+                    padding: EdgeInsets.fromLTRB(0, 10, 10, 10),
+                    child: CircleAvatar(
+                      backgroundColor: Color(0xee191654),
+                      backgroundImage: NetworkImage(_user.profile_image_url),
+                      radius: 60,
+                    ),
+                  ),
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: <Widget>[
+                      Container(
+                        padding: EdgeInsets.fromLTRB(0, 40, 0, 2),
+                        child: Text(
+                          _user.username,
+                          style: TextStyle(
+                              fontSize: 25.0,
+                              fontWeight: FontWeight.bold,
+                              color: Colors.black),
+                        ),
                       ),
-              )
-    );
+                      Container(
+                        padding: EdgeInsets.fromLTRB(0, 2, 10, 10),
+                        child: Text(
+                          _user.email,
+                          style: TextStyle(
+                              fontSize: 17.0,
+                              fontWeight: FontWeight.normal,
+                              color: Colors.grey),
+                        ),
+                      ),
+                    ],
+                  )
+                ],
+              ),
+            ));
 
     return Scaffold(
-      
-      appBar: AppBar(
+        appBar: AppBar(
           title: Text("Profile"),
           flexibleSpace: Container(
             decoration: BoxDecoration(
@@ -211,8 +206,7 @@ class _ProfileScreenState extends State<ProfileScreen>
             ),
           ],
         ),
-
-      body:(_errorProfile == true
+        body: (_errorProfile == true
             ? Center(
                 child: Text("An error occured"),
               )
@@ -221,121 +215,114 @@ class _ProfileScreenState extends State<ProfileScreen>
                     color: Colors.teal,
                   )
                 : NestedScrollView(
-        controller: _scrollViewController,
-          headerSliverBuilder: (BuildContext context, bool innerBoxIsScrolled) {
-            return <Widget>[
-              flexibleSpaceWidget,
-             ];
-          },
-        body: Column(
-
-          children: <Widget>[
-
-                     Padding(padding: EdgeInsets.fromLTRB(5, 5, 5, 30),),
-
-                      Container(
-                        child: Padding(
-                          padding: EdgeInsets.fromLTRB(10, 10, 10, 20),
-                        child: Text(
-                          _user.about ?? ' ',
-                          textAlign: TextAlign.center,
-                          style: TextStyle(fontSize: 18.0),
+                    controller: _scrollViewController,
+                    headerSliverBuilder:
+                        (BuildContext context, bool innerBoxIsScrolled) {
+                      return <Widget>[
+                        flexibleSpaceWidget,
+                      ];
+                    },
+                    body: Column(
+                      children: <Widget>[
+                        Padding(
+                          padding: EdgeInsets.fromLTRB(5, 5, 5, 30),
                         ),
+                        Container(
+                          child: Padding(
+                            padding: EdgeInsets.fromLTRB(10, 10, 10, 20),
+                            child: Text(
+                              _user.about ?? ' ',
+                              textAlign: TextAlign.center,
+                              style: TextStyle(fontSize: 18.0),
+                            ),
+                          ),
                         ),
-                      ),
-
-                      StickyHeader(
-                      header:  Container(
-                        child: Padding(
-                          padding: EdgeInsets.all(16.0),
-                          child: Row(
-                            children: <Widget>[
-                              Expanded(
-                                flex: 1,
-                                child: Column(
-                                  children: <Widget>[
-                                    Text(
-                                      _user.followerCount.toString() +
-                                          " followers",
-                                      style: TextStyle(
-                                          fontSize: 17.0,
-                                          fontWeight: FontWeight.bold,
-                                          color:
-                                              Theme.of(context).primaryColor),
+                        StickyHeader(
+                          header: Container(
+                            child: Padding(
+                              padding: EdgeInsets.all(16.0),
+                              child: Row(
+                                children: <Widget>[
+                                  Expanded(
+                                    flex: 1,
+                                    child: Column(
+                                      children: <Widget>[
+                                        Text(
+                                          _user.followerCount.toString() +
+                                              " followers",
+                                          style: TextStyle(
+                                              fontSize: 17.0,
+                                              fontWeight: FontWeight.bold,
+                                              color: Theme.of(context)
+                                                  .primaryColor),
+                                        ),
+                                      ],
                                     ),
-                                  ],
-                                ),
-                              ),
-                              Expanded(
-                                flex: 1,
-                                child: Column(
-                                  children: <Widget>[
-                                    Text(
-                                      _user.followingCount.toString() +
-                                          " following",
-                                      style: TextStyle(
-                                        fontSize: 17.0,
-                                        fontWeight: FontWeight.bold,
-                                        color: Theme.of(context).primaryColor,
-                                      ),
+                                  ),
+                                  Expanded(
+                                    flex: 1,
+                                    child: Column(
+                                      children: <Widget>[
+                                        Text(
+                                          _user.followingCount.toString() +
+                                              " following",
+                                          style: TextStyle(
+                                            fontSize: 17.0,
+                                            fontWeight: FontWeight.bold,
+                                            color:
+                                                Theme.of(context).primaryColor,
+                                          ),
+                                        ),
+                                      ],
                                     ),
-                                  ],
-                                ),
+                                  ),
+                                ],
                               ),
+                            ),
+                          ),
+                          content: Container(),
+                        ),
+                        Container(
+                          decoration: BoxDecoration(
+                              color: Theme.of(context).colorScheme.primary),
+                          child: TabBar(
+                            indicatorColor:
+                                Theme.of(context).colorScheme.onPrimary,
+                            controller: _tabController,
+                            tabs: [
+                              Tab(
+                                text: "Articles",
+                              ),
+                              Tab(text: "Collections"),
                             ],
                           ),
                         ),
-                      ),
-                     content: Container(),
-                    ),
-
-                     Container(
-                       decoration:  BoxDecoration(
-                            color: Theme.of(context).colorScheme.primary),
-                        child:  TabBar(
-                          indicatorColor:
-                           Theme.of(context).colorScheme.onPrimary,
-                          controller: _tabController,
-                          tabs: [
-                            Tab(
-                              text: "Articles",
-                            ),
-                            Tab(text: "Collections"),
-                          ],
-                        ),
-                      ),
-
-                      new Expanded(
-                      child:TabBarView(
-                            controller: _tabController,
-                            children: <Widget>[
-                              (_errorArticle == true
-                                  ? Center(
-                                      child: Text("An error occured"),
-                                    )
-                                  : (_loadingArticles == true
-                                      ? SpinKitDoubleBounce(
-                                          color: Colors.teal,
-                                        )
-                                      : ArticlesList())),
-                              (_errorCollections == true
-                                  ? Center(
-                                      child: Text("An error occured"),
-                                    )
-                                  : (_loadingCollections == true
-                                      ? SpinKitDoubleBounce(
-                                          color: Colors.teal,
-                                        )
-                                      : CollectionList())),
-                            ]),
-                      )
-          
-          ],
-        )
-       )
-      )
-     )
-    );
+                        new Expanded(
+                          child: TabBarView(
+                              controller: _tabController,
+                              children: <Widget>[
+                                (_errorArticle == true
+                                    ? Center(
+                                        child: Text("An error occured"),
+                                      )
+                                    : (_loadingArticles == true
+                                        ? SpinKitDoubleBounce(
+                                            color: Colors.teal,
+                                          )
+                                        : ArticlesList())),
+                                (_errorCollections == true
+                                    ? Center(
+                                        child: Text("An error occured"),
+                                      )
+                                    : (_loadingCollections == true
+                                        ? SpinKitDoubleBounce(
+                                            color: Colors.teal,
+                                          )
+                                        : CollectionList())),
+                              ]),
+                        )
+                      ],
+                    )))));
   }
 }
 

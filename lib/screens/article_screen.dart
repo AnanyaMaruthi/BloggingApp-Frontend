@@ -4,13 +4,13 @@ import 'package:flutter/material.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
-import 'package:flutter_speed_dial/flutter_speed_dial.dart';
 import 'package:zefyr/zefyr.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import '../route_observer.dart' as route_observer;
 
 import './article_edit_screen.dart';
 import './profile_screen.dart';
+import './opinion_screen.dart';
 
 import '../widgets/error_dialog.dart';
 
@@ -107,27 +107,30 @@ class _ArticleScreenState extends State<ArticleScreen>
                 ]),
           ),
         ),
-        actions:  _loading==true?null:_article.is_author
-              ?  <Widget>[
-         PopupMenuButton(
-                  onSelected: (int selectedValue) {
-                    if (selectedValue == 0) {
-                      showAlert(context, _article.article_id);
-                    } else {
-                      Navigator.of(context).pushNamed(
-                          ArticleEditScreen.routeName,
-                          arguments: _article);
-                    }
-                  },
-                  icon: Icon(
-                    Icons.more_vert,
-                  ),
-                  itemBuilder: (_) => [
-                    PopupMenuItem(child: Text('Delete Article'), value: 0),
-                    PopupMenuItem(child: Text('Edit Article'), value: 1),
-                  ],
-                ),
-        ] : null,
+        actions: _loading == true
+            ? null
+            : _article.is_author
+                ? <Widget>[
+                    PopupMenuButton(
+                      onSelected: (int selectedValue) {
+                        if (selectedValue == 0) {
+                          showAlert(context, _article.article_id);
+                        } else {
+                          Navigator.of(context).pushNamed(
+                              ArticleEditScreen.routeName,
+                              arguments: _article);
+                        }
+                      },
+                      icon: Icon(
+                        Icons.more_vert,
+                      ),
+                      itemBuilder: (_) => [
+                        PopupMenuItem(child: Text('Delete Article'), value: 0),
+                        PopupMenuItem(child: Text('Edit Article'), value: 1),
+                      ],
+                    ),
+                  ]
+                : null,
       ),
       body: (_error == true
           ? Center(
@@ -204,6 +207,32 @@ class _ArticleScreenState extends State<ArticleScreen>
                       //   ),
                       // ),
                       Authorcard(),
+                      Padding(
+                        padding: const EdgeInsets.all(10),
+                        child: Container(
+                          child: SizedBox(
+                            width: double.infinity,
+                            child: MaterialButton(
+                              color: Colors.teal,
+                              padding: EdgeInsets.fromLTRB(2.0, 5.0, 2.0, 5.0),
+                              onPressed: () {
+                                Navigator.of(context).pushNamed(
+                                    OpinionScreen.routeName,
+                                    arguments: _article.article_id);
+                                print("hello");
+                              },
+                              child: Text(
+                                "Opinions",
+                                textAlign: TextAlign.center,
+                                style: TextStyle(
+                                  color: Colors.white,
+                                  fontSize: 15,
+                                ),
+                              ),
+                            ),
+                          ),
+                        ),
+                      ),
                     ],
                   ),
                 ))),
