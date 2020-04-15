@@ -141,47 +141,13 @@ class _ProfileScreenState extends State<ProfileScreen>
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        // appBar: AppBar(
-        //   title: Text("Profile"),
-        //   flexibleSpace: Container(
-        //     decoration: BoxDecoration(
-        //       gradient: LinearGradient(
-        //           begin: Alignment.topLeft,
-        //           end: Alignment.bottomRight,
-        //           colors: [
-        //             Color(0xff191654),
-        //             Color(0xff43c6ac),
-        //             Color(0xff6dffe1),
-        //           ]),
-        //     ),
-        //   ),
-        //   actions: <Widget>[
-        //     PopupMenuButton(
-        //       onSelected: (int selectedValue) {
-        //         if (selectedValue == 0) {
-        //           Navigator.of(context)
-        //               .pushNamed(ProfileEditScreen.routeName, arguments: _user);
-        //         } else {
-        //           Navigator.of(context).pushNamed(ChangePassword.routeName);
-        //         }
-        //       },
-        //       icon: Icon(
-        //         Icons.more_vert,
-        //       ),
-        //       itemBuilder: (_) => [
-        //         PopupMenuItem(child: Text('Edit Profile'), value: 0),
-        //         PopupMenuItem(child: Text('Change Password'), value: 1),
-        //       ],
-        //     ),
-        //   ],
-        // ),
         body: (_errorProfile == true
             ? Center(
                 child: Text("An error occured"),
               )
             : (_loadingProfile == true
                 ? SpinKitChasingDots(
-                    color: Colors.teal,
+                    color: Theme.of(context).colorScheme.primary,
                   )
                 : DefaultTabController(
                     length: 2,
@@ -253,12 +219,17 @@ class _ProfileScreenState extends State<ProfileScreen>
                                                 Container(
                                                   padding: EdgeInsets.fromLTRB(
                                                       10, 10, 10, 2),
+                                                  // TODO: fix overflow
                                                   child: Text(
                                                     _user.username,
+                                                    overflow: TextOverflow.fade,
                                                     style: TextStyle(
                                                       fontSize: 25.0,
                                                       fontWeight:
                                                           FontWeight.bold,
+                                                      color: Theme.of(context)
+                                                          .colorScheme
+                                                          .onPrimary,
                                                     ),
                                                   ),
                                                 ),
