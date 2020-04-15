@@ -1,5 +1,3 @@
-import 'package:bloggingapp/providers/article.dart';
-import 'package:bloggingapp/widgets/article_preview_card.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
@@ -12,15 +10,15 @@ import '../screens/article_insert_screen.dart';
 
 // Widgets
 import '../widgets/collection_details_card.dart';
-import '../widgets/articles_list.dart';
-import '../widgets/article_sliver_list.dart';
 import '../widgets/author_input.dart';
 import '../widgets/error_dialog.dart';
+import '../widgets/article_preview_card.dart';
 
 // Providers
 import '../providers/collections.dart';
 import '../providers/collection.dart';
 import '../providers/articles.dart';
+import '../providers/article.dart';
 
 class CollectionScreen extends StatefulWidget {
   static const routeName = "/collection";
@@ -33,7 +31,6 @@ class CollectionScreen extends StatefulWidget {
 class _CollectionScreenState extends State<CollectionScreen>
     with SingleTickerProviderStateMixin, RouteAware {
   Collection _collection;
-  ScrollController _controller = new ScrollController();
 
   bool _isInit = true;
   bool _loadingCollection = true;
@@ -41,53 +38,24 @@ class _CollectionScreenState extends State<CollectionScreen>
   bool _errorCollection = false;
   bool _errorArticles = false;
   List<dynamic> _authors = [];
-
-  bool isScrollingDown = false;
-  bool _changeAppbarText = false;
-
   List<Article> _articles = [];
+  ScrollController _scrollController;
+  String _appbarTitle = "Collection";
 
   final routeObserver = route_observer.routeObserver;
 
   @override
   void initState() {
+    _scrollController = ScrollController();
+    _scrollController.addListener(_scrollListener);
     super.initState();
-    myScroll();
   }
 
   @override
   void dispose() {
     super.dispose();
-    _controller.removeListener(() {});
+    _scrollController.removeListener(() {});
     super.dispose();
-  }
-
-  void myScroll() async {
-    _controller.addListener(() {
-      if (_controller.position.userScrollDirection == ScrollDirection.reverse) {
-        if (!isScrollingDown) {
-          isScrollingDown = true;
-          setState(() {
-            _changeAppbarText = true;
-          });
-          print("Scrolling down");
-        }
-      }
-      if (_controller.position.userScrollDirection == ScrollDirection.forward) {
-        if (isScrollingDown) {
-          isScrollingDown = false;
-          setState(() {
-            _changeAppbarText = true;
-          });
-          print("Scrolling up");
-        }
-      }
-      if (_controller.position.pixels == 0) {
-        setState(() {
-          _changeAppbarText = false;
-        });
-      }
-    });
   }
 
   @override
@@ -106,6 +74,20 @@ class _CollectionScreenState extends State<CollectionScreen>
   void didPopNext() {
     _loadData();
     super.didPopNext();
+  }
+
+  void _scrollListener() {
+    if (_scrollController.position.pixels == 0) {
+      setState(() {
+        _appbarTitle = "Collection";
+      });
+    } else {
+      if (_appbarTitle == "Collection") {
+        setState(() {
+          _appbarTitle = _collection.collection_name ?? " ";
+        });
+      }
+    }
   }
 
   void _setAuthors(List<dynamic> authors) {
@@ -159,9 +141,7 @@ class _CollectionScreenState extends State<CollectionScreen>
     return Scaffold(
       resizeToAvoidBottomPadding: false,
       appBar: AppBar(
-          title: (_changeAppbarText == true
-              ? Text(_collection.collection_name)
-              : Text("Collection...")),
+          title: (Text(_appbarTitle)),
           flexibleSpace: Container(
             decoration: BoxDecoration(
               gradient: LinearGradient(
@@ -211,7 +191,7 @@ class _CollectionScreenState extends State<CollectionScreen>
                   : null),
       body: CustomScrollView(
         physics: const AlwaysScrollableScrollPhysics(),
-        controller: _controller,
+        controller: _scrollController,
         slivers: <Widget>[
           SliverToBoxAdapter(
             child: (_errorCollection == true
@@ -228,29 +208,11 @@ class _CollectionScreenState extends State<CollectionScreen>
                             value: _collection,
                             child: CollectionDetailsCard(),
                           ),
-                          // (_errorArticles == true
-                          //     ? Center(
-                          //         child: Text("An error occured"),
-                          //       )
-                          //     : (_loadingArticles == true
-                          //         ? SpinKitWanderingCubes(
-                          //             color: Colors.teal,
-                          //           )
-                          //         : Flexible(
-                          //             child: ArticlesList(),
-                          //           ))),
                         ],
                       ))),
           ),
           SliverList(
-            delegate: SliverChildListDelegate(_buildArticleList()
-                // [
-                //   Container(color: Colors.red, height: 150.0),
-                //   Container(color: Colors.purple, height: 150.0),
-                //   Container(color: Colors.green, height: 150.0),
-                // ],
-
-                ),
+            delegate: SliverChildListDelegate(_buildArticleList()),
           )
         ],
       ),
