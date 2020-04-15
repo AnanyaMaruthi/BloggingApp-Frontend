@@ -1,4 +1,5 @@
-
+import 'package:bloggingapp/providers/article.dart';
+import 'package:bloggingapp/widgets/article_preview_card.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
@@ -12,6 +13,7 @@ import '../screens/article_insert_screen.dart';
 // Widgets
 import '../widgets/collection_details_card.dart';
 import '../widgets/articles_list.dart';
+import '../widgets/article_sliver_list.dart';
 import '../widgets/author_input.dart';
 import '../widgets/error_dialog.dart';
 
@@ -26,7 +28,6 @@ class CollectionScreen extends StatefulWidget {
   CollectionScreen(this.collectionId);
   @override
   _CollectionScreenState createState() => _CollectionScreenState();
-  
 }
 
 class _CollectionScreenState extends State<CollectionScreen>
@@ -41,12 +42,14 @@ class _CollectionScreenState extends State<CollectionScreen>
   bool _errorArticles = false;
   List<dynamic> _authors = [];
 
-   bool isScrollingDown = false;
+  bool isScrollingDown = false;
   bool _changeAppbarText = false;
+
+  List<Article> _articles = [];
 
   final routeObserver = route_observer.routeObserver;
 
-   @override
+  @override
   void initState() {
     super.initState();
     myScroll();
@@ -59,37 +62,33 @@ class _CollectionScreenState extends State<CollectionScreen>
     super.dispose();
   }
 
-   void myScroll() async {
+  void myScroll() async {
     _controller.addListener(() {
-      if (_controller.position.userScrollDirection ==
-          ScrollDirection.reverse) {
+      if (_controller.position.userScrollDirection == ScrollDirection.reverse) {
         if (!isScrollingDown) {
           isScrollingDown = true;
-           setState(() {
-              _changeAppbarText = true;
-           });
-            print("Scrolling down"); 
+          setState(() {
+            _changeAppbarText = true;
+          });
+          print("Scrolling down");
         }
       }
-      if (_controller.position.userScrollDirection ==
-          ScrollDirection.forward) {
+      if (_controller.position.userScrollDirection == ScrollDirection.forward) {
         if (isScrollingDown) {
           isScrollingDown = false;
-           setState(() {
-              _changeAppbarText = true;
-           });
+          setState(() {
+            _changeAppbarText = true;
+          });
           print("Scrolling up");
         }
       }
-       if (_controller.position.pixels == 0){
-              setState(() {
-              _changeAppbarText = false;
-           });
-
-        }
+      if (_controller.position.pixels == 0) {
+        setState(() {
+          _changeAppbarText = false;
+        });
+      }
     });
   }
-
 
   @override
   void didChangeDependencies() {
@@ -145,7 +144,9 @@ class _CollectionScreenState extends State<CollectionScreen>
         .then((_) {
       setState(() {
         _loadingArticles = false;
+        _articles = Provider.of<Articles>(context).articles;
       });
+      print(_articles);
     }).catchError((errorMessage) {
       setState(() {
         _errorArticles = true;
@@ -155,12 +156,12 @@ class _CollectionScreenState extends State<CollectionScreen>
 
   @override
   Widget build(BuildContext context) {
-
     return Scaffold(
       resizeToAvoidBottomPadding: false,
-     appBar:AppBar(
-          title:(_changeAppbarText==true
-          ? Text(_collection.collection_name):Text("Collection...")),
+      appBar: AppBar(
+          title: (_changeAppbarText == true
+              ? Text(_collection.collection_name)
+              : Text("Collection...")),
           flexibleSpace: Container(
             decoration: BoxDecoration(
               gradient: LinearGradient(
@@ -173,79 +174,87 @@ class _CollectionScreenState extends State<CollectionScreen>
                   ]),
             ),
           ),
-          actions: _loadingCollection==true?null: _collection.is_owner?
-          <Widget>[ 
-            PopupMenuButton(
-              onSelected: (int selectedValue) {
-                if (selectedValue == 0) {
-                  _showDeleteCollectionDialog(context);
-                } else if (selectedValue == 1) {
-                  Navigator.of(context).pushNamed(
-                    EditCollection.routeName,
-                    arguments: _collection,
-                  );
-                } else if (selectedValue == 2) {
-                  Navigator.of(context)
-                      .pushNamed(ArticleDeleteScreen.routeName);
-                } else if (selectedValue == 3) {
-                  _showEditAuthorDialog();
-                }
-              },
-              icon: Icon(
-                Icons.more_vert,
-              ),
-              itemBuilder: (_) => [
-                PopupMenuItem(child: Text('Delete Collection'), value: 0),
-                PopupMenuItem(child: Text('Edit Collection'), value: 1),
-                PopupMenuItem(child: Text('Delete Article'), value: 2),
-                PopupMenuItem(child: Text('Authors'), value: 3),
-              ],
-            ),
-          ]:null),
-        
-         
-            body:CustomScrollView(
-            //physics: const AlwaysScrollableScrollPhysics(),
-            controller: _controller,
-            slivers: <Widget>[
-                    SliverToBoxAdapter(
-                    child: SizedBox(
-                    height: 1000,
-                    child: (_errorCollection == true
-                    ? Center(
-                          child: Text("An error occured"),
-                       )
-                   : (_loadingCollection == true
-                      ? SpinKitChasingDots(
-                               color: Colors.teal,
-                         )
-                       :
-                   Column(
-                      children: [
-                     ChangeNotifierProvider.value(
-                      value: _collection,
-                      child: CollectionDetailsCard(),
-                      
-                    ),
-                    (_errorArticles == true
-                        ? Center(
-                            child: Text("An error occured"),
-                          )
-                        : (_loadingArticles == true
-                            ? SpinKitWanderingCubes(
-                                color: Colors.teal,
-                              )
-                            : Flexible(
-                                child: ArticlesList(),
-                              ))),
-                  ],
-                ))),
+          actions: (_loadingCollection == true || _errorCollection == true)
+              ? null
+              : _collection.is_owner
+                  ? <Widget>[
+                      PopupMenuButton(
+                        onSelected: (int selectedValue) {
+                          if (selectedValue == 0) {
+                            _showDeleteCollectionDialog(context);
+                          } else if (selectedValue == 1) {
+                            Navigator.of(context).pushNamed(
+                              EditCollection.routeName,
+                              arguments: _collection,
+                            );
+                          } else if (selectedValue == 2) {
+                            Navigator.of(context)
+                                .pushNamed(ArticleDeleteScreen.routeName);
+                          } else if (selectedValue == 3) {
+                            _showEditAuthorDialog();
+                          }
+                        },
+                        icon: Icon(
+                          Icons.more_vert,
+                        ),
+                        itemBuilder: (_) => [
+                          PopupMenuItem(
+                              child: Text('Delete Collection'), value: 0),
+                          PopupMenuItem(
+                              child: Text('Edit Collection'), value: 1),
+                          PopupMenuItem(
+                              child: Text('Delete Article'), value: 2),
+                          PopupMenuItem(child: Text('Authors'), value: 3),
+                        ],
+                      ),
+                    ]
+                  : null),
+      body: CustomScrollView(
+        physics: const AlwaysScrollableScrollPhysics(),
+        controller: _controller,
+        slivers: <Widget>[
+          SliverToBoxAdapter(
+            child: (_errorCollection == true
+                ? Center(
+                    child: Text("An error occured"),
+                  )
+                : (_loadingCollection == true
+                    ? SpinKitChasingDots(
+                        color: Colors.teal,
+                      )
+                    : Column(
+                        children: [
+                          ChangeNotifierProvider.value(
+                            value: _collection,
+                            child: CollectionDetailsCard(),
+                          ),
+                          // (_errorArticles == true
+                          //     ? Center(
+                          //         child: Text("An error occured"),
+                          //       )
+                          //     : (_loadingArticles == true
+                          //         ? SpinKitWanderingCubes(
+                          //             color: Colors.teal,
+                          //           )
+                          //         : Flexible(
+                          //             child: ArticlesList(),
+                          //           ))),
+                        ],
+                      ))),
+          ),
+          SliverList(
+            delegate: SliverChildListDelegate(_buildArticleList()
+                // [
+                //   Container(color: Colors.red, height: 150.0),
+                //   Container(color: Colors.purple, height: 150.0),
+                //   Container(color: Colors.green, height: 150.0),
+                // ],
+
+                ),
+          )
+        ],
       ),
-    ),
-  ],
- ),
-  
-   floatingActionButton: (_loadingCollection == true
+      floatingActionButton: (_loadingCollection == true
           ? null
           : (_collection.is_author == true || _collection.is_owner == true
               ? FloatingActionButton(
@@ -261,7 +270,19 @@ class _CollectionScreenState extends State<CollectionScreen>
                 )
               : null)),
     );
-    
+  }
+
+  List _buildArticleList() {
+    List<Widget> articles = List();
+
+    for (int i = 0; i < _articles.length; i++) {
+      articles.add(ChangeNotifierProvider.value(
+        value: _articles[i],
+        child: ArticlePreviewCard(),
+      ));
+    }
+
+    return articles;
   }
 
   _showEditAuthorDialog() {
