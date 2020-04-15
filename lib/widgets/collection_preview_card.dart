@@ -10,38 +10,40 @@ class CollectionPreviewCard extends StatelessWidget {
   Widget build(BuildContext context) {
     final _collection = Provider.of<Collection>(context);
 
-    return new Card(
+    return Card(
       elevation: 8.0,
-      margin: new EdgeInsets.symmetric(horizontal: 10.0, vertical: 6.0),
+      margin: EdgeInsets.symmetric(horizontal: 10.0, vertical: 6.0),
       child: Container(
         decoration: BoxDecoration(),
         child: ListTile(
           contentPadding:
               EdgeInsets.symmetric(horizontal: 20.0, vertical: 10.0),
-          leading: CircleAvatar(
-            backgroundColor: Color(0xee191654),
-            backgroundImage: NetworkImage(_collection.image_url),
-            radius: 40,
+          leading:
+              //  CircleAvatar(
+              //   backgroundColor: Color(0xee191654),
+              //   backgroundImage: NetworkImage(_collection.image_url),
+              //   radius: 40,
+              // ),
+              // ClipOval(
+              //   child:
+              CachedNetworkImage(
+            imageUrl: _collection.image_url,
+            placeholder: (context, url) => Image.network(
+              "http://via.placeholder.com/640x360",
+              fit: BoxFit.cover,
+              height: 50.0,
+              width: 50.0,
+            ),
+            errorWidget: (context, url, error) => Image.network(
+              "http://via.placeholder.com/640x360",
+              fit: BoxFit.cover,
+              height: 50.0,
+              width: 50.0,
+            ),
+            fit: BoxFit.cover,
+            height: 50.0,
+            width: 50.0,
           ),
-          // ClipOval(
-          //   child: CachedNetworkImage(
-          //     imageUrl: _collection.image_url,
-          //     placeholder: (context, url) => Image.network(
-          //       "http://via.placeholder.com/640x360",
-          //       fit: BoxFit.cover,
-          //       height: 50.0,
-          //       width: 50.0,
-          //     ),
-          //     errorWidget: (context, url, error) => Image.network(
-          //       "http://via.placeholder.com/640x360",
-          //       fit: BoxFit.cover,
-          //       height: 50.0,
-          //       width: 50.0,
-          //     ),
-          //     fit: BoxFit.cover,
-          //     height: 50.0,
-          //     width: 50.0,
-          //   ),
           // ),
           title: Text(
             _collection.collection_name,
@@ -59,7 +61,7 @@ class CollectionPreviewCard extends StatelessWidget {
           // Is owner
           trailing: _collection.is_owner
               ? FlatButton(
-                  disabledColor: Color(0xffFFC922),
+                  disabledColor: Color(0xffAF5680),
                   disabledTextColor: Colors.white,
                   textColor: Colors.white,
                   padding: EdgeInsets.all(10.0),
