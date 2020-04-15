@@ -45,7 +45,6 @@ class CollectionDetailsCard extends StatelessWidget {
                 textAlign: TextAlign.center,
               ),
             ),
-            
           ),
           Padding(
             padding: const EdgeInsets.only(
@@ -53,22 +52,10 @@ class CollectionDetailsCard extends StatelessWidget {
               right: 10,
             ),
             child: Container(
-              height: 200,
-              width: double.infinity,
               child: CachedNetworkImage(
                 imageUrl: _collection.image_url,
-                placeholder: (context, url) => Image.network(
-                  "http://via.placeholder.com/640x360",
-                  fit: BoxFit.cover,
-                  height: 200,
-                  width: double.infinity,
-                ),
-                errorWidget: (context, url, error) => Image.network(
-                  "http://via.placeholder.com/640x360",
-                  fit: BoxFit.cover,
-                  height: 200,
-                  width: double.infinity,
-                ),
+                placeholder: (context, url) => null,
+                errorWidget: (context, url, error) => null,
                 fit: BoxFit.cover,
                 height: 200,
                 width: double.infinity,
