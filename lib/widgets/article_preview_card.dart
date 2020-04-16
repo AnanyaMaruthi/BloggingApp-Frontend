@@ -6,6 +6,7 @@ import 'package:provider/provider.dart';
 import '../screens/article_screen.dart';
 
 import '../providers/article.dart';
+import '../providers/articles.dart';
 
 class ArticlePreviewCard extends StatelessWidget {
   Widget build(BuildContext context) {
@@ -80,6 +81,11 @@ class ArticlePreviewCard extends StatelessWidget {
                                       color: Theme.of(context).primaryColor,
                                     ),
                                     onPressed: () {
+                                      Provider.of<Articles>(context)
+                                          .removeBookmark(article.article_id)
+                                          .then((_) {
+                                        print("Removed bookmark");
+                                      });
                                       article
                                           .removeBookmark(article.article_id)
                                           .then((_) {

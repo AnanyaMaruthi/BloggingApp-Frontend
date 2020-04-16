@@ -36,7 +36,15 @@ class MainDrawer extends StatelessWidget {
         children: <Widget>[
           UserAccountsDrawerHeader(
             decoration: BoxDecoration(
-              color: Theme.of(context).primaryColor,
+              gradient: LinearGradient(
+                begin: Alignment.topLeft,
+                end: Alignment.bottomRight,
+                colors: [
+                  Color(0xff191654),
+                  Color(0xff43c6ac),
+                  // Color(0xff6dffe1),
+                ]),
+              //color: Theme.of(context).primaryColor,
             ),
             // currentAccountPicture: CircleAvatar(
             //   backgroundColor: Theme.of(context).colorScheme.secondary,
@@ -52,8 +60,8 @@ class MainDrawer extends StatelessWidget {
             //   ),
             // ),
             // ),
-            accountEmail: Text("email"),
-            accountName: Text("username"),
+            accountEmail: Text("johndoe@gmail.com"),
+            accountName: Text("johndoe"),
           ),
           ListTile(
               leading: Icon(Icons.person),

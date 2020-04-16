@@ -9,7 +9,7 @@ import 'package:cached_network_image/cached_network_image.dart';
 import '../route_observer.dart' as route_observer;
 
 import './article_edit_screen.dart';
-import './profile_screen.dart';
+import './user_screen.dart';
 import './opinion_screen.dart';
 
 import '../widgets/error_dialog.dart';
@@ -309,8 +309,10 @@ void loadTags(){
             softWrap: true,
           ),
           onTap: () {
-            Navigator.of(context).pushNamed(ProfileScreen.routeName,
-                arguments: _article.user_id);
+            Navigator.of(context).pushNamed(
+             UserScreen.routeName,
+              arguments: _article.user_id.toString(),
+           );
           },
         ),
       ),

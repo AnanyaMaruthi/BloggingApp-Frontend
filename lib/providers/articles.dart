@@ -26,6 +26,12 @@ class Articles with ChangeNotifier {
     return [..._articles];
   }
 
+  Future<void> removeBookmark(String articleId) async {
+    print("Delete from screen");
+    _articles.removeWhere((article) => article.article_id == articleId);
+    notifyListeners();
+  }
+
   Future<void> deleteArticle(String articleId) async {
     print("Delete from screen");
     _articles.removeWhere((article) => article.article_id == articleId);

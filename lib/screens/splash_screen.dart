@@ -48,21 +48,6 @@ class _SplashScreenState extends State<SplashScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        flexibleSpace: Container(
-          decoration: BoxDecoration(
-            gradient: LinearGradient(
-                begin: Alignment.topLeft,
-                end: Alignment.bottomRight,
-                colors: [
-                  Color(0xff191654),
-                  Color(0xff43c6ac),
-                  // Color(0xff6dffe1),
-                ]),
-          ),
-        ),
-        title: Text("Flutter Blog App"),
-      ),
       backgroundColor: Color(0xfff3f7f6),
       body: Container(
         margin: const EdgeInsets.only(top: 100.0),

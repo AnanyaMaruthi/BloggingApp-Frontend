@@ -74,30 +74,17 @@ class LoginScreenState extends State<LoginScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        flexibleSpace: Container(
-          decoration: BoxDecoration(
-            gradient: LinearGradient(
-                begin: Alignment.topLeft,
-                end: Alignment.bottomRight,
-                colors: [
-                  Color(0xff191654),
-                  Color(0xff43c6ac),
-                  // Color(0xff6dffe1),
-                ]),
-          ),
-        ),
-        title: Text("Flutter Blog App"),
-      ),
       body: SingleChildScrollView(
         child: Container(
           margin: EdgeInsets.all(25.0),
           child: Form(
             key: formKey,
             autovalidate: true,
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              children: createInputs() + createButtons(),
+            child: Center(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: createInputs() + createButtons(),
+              ),
             ),
           ),
         ),
