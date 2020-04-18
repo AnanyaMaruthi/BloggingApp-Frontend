@@ -12,7 +12,7 @@ import 'package:flutter/material.dart';
 import '../server_util.dart' as Server;
 import './opinion.dart';
 
-class Opinions with ChangeNotifier{
+class Opinions with ChangeNotifier {
   static const baseUrl = Server.SERVER_IP + "/api/v1/";
   Future<SharedPreferences> _prefs = SharedPreferences.getInstance();
   SharedPreferences _sharedPreferences;
@@ -26,6 +26,7 @@ class Opinions with ChangeNotifier{
     _sharedPreferences = await _prefs;
     String token = _sharedPreferences.getString('token');
     String url = baseUrl + "articles/" + articleId + "/opinions";
+    print(url);
     try {
       final response = await http.get(
         url,
@@ -33,7 +34,7 @@ class Opinions with ChangeNotifier{
       );
       if (response.statusCode == 200) {
         final responseJson = json.decode(response.body);
-        for (final opinion in responseJson["opinions"]){
+        for (final opinion in responseJson["opinions"]) {
           fetchedOpinions.add(Opinion(
             opinion_id: opinion["opinion_id"],
             article_id: opinion["article_id"],
@@ -41,7 +42,7 @@ class Opinions with ChangeNotifier{
             user_profile_image_path: opinion["profile_image_url"],
             content: opinion["content"],
             opinion_date: opinion["date_created"],
-         ));
+          ));
         }
         _opinions = [...fetchedOpinions];
         notifyListeners();
@@ -59,39 +60,44 @@ class Opinions with ChangeNotifier{
   }
 
   // Add new Opinion
-   Future<void> addOpinion(String content, String articleId) async {
-     print(content);
-     print(articleId);
+  Future<void> addOpinion(String content, String articleId) async {
+    print("I am in provider");
+    print(content);
+    print(articleId);
 
-     String url = baseUrl + "article/"+articleId+"/opinions";
+    String url = baseUrl + "article/" + articleId + "/opinions";
     _sharedPreferences = await _prefs;
     String token = _sharedPreferences.getString('token');
     DateFormat dateFormatter = new DateFormat('yyyy-MM-dd');
     String date_created = dateFormatter.format(DateTime.now());
-    var request = http.MultipartRequest('POST', Uri.parse(url));
-    request.headers["Authorization"] = token;
-    request.fields["content"] = content;
-    request.fields["date_created"]=date_created;
-    request.fields["is_reply"]="0";
-    try {
-      dynamic response = await request.send();
-      response = await response.stream.bytesToString();
-      final responseJson = json.decode(response);
-      if (responseJson["error"] == false) {
-        print("Inserted successfully");
-      } else {
+    try{
+      var response = await http.post(
+        url,
+        headers: {HttpHeaders.authorizationHeader: token},
+        body: {
+          "content": content,
+          "date_created": date_created,
+          "is_reply": "0",
+        },
+      );
+      final responseJson = json.decode(response.body);
+      if(response.statusCode == 200){
+        print(responseJson);
+        print("Added opinion successfully");
+      }else{
+        print(response.body);
         print(responseJson["message"]);
-        throw "Failed to insert comment";
+        throw "Failed to add opinion";
       }
-    } catch (error) {
-      throw "Failed to insert comment";
+    }catch(error){
+      throw error;
     }
   }
 
   // Get All replies of an Opinion
   Future<void> getAllReplies(String articleId, String opinionId) async {
     List<Opinion> fetchedReplies = [];
-    String url = baseUrl +  "articles/" + articleId + "/opinions" + opinionId;
+    String url = baseUrl + "articles/" + articleId + "/opinions" + opinionId;
     _sharedPreferences = await _prefs;
     String token = _sharedPreferences.getString('token');
     await http.get(
@@ -122,9 +128,8 @@ class Opinions with ChangeNotifier{
       throw "Failed to load replies";
     });
   }
-  
-  List<Opinion> get opinions{
+
+  List<Opinion> get opinions {
     return [..._opinions];
   }
-
 }
