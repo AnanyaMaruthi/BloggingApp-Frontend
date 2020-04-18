@@ -34,6 +34,7 @@ class Opinions with ChangeNotifier {
       );
       if (response.statusCode == 200) {
         final responseJson = json.decode(response.body);
+        print(responseJson);
         for (final opinion in responseJson["opinions"]) {
           fetchedOpinions.add(Opinion(
             opinion_id: opinion["opinion_id"].toString(),

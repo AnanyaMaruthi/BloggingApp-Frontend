@@ -69,7 +69,8 @@ class _OpinionSystemState extends State<OpinionSystem> {
     print("lol");
     String content = _commentController.text;
     Provider.of<Opinions>(context).addOpinion(content, widget.articleId).then((_){
-      Toast.show("New collection added!", context,
+      //Remove it later. The new opinion should be dsiaplyed on the list
+      Toast.show("New opinion added!", context,
             duration: 7, gravity: Toast.BOTTOM);
     });
   }
