@@ -25,7 +25,7 @@ class Opinions with ChangeNotifier {
     List<Opinion> fetchedOpinions = [];
     _sharedPreferences = await _prefs;
     String token = _sharedPreferences.getString('token');
-    String url = baseUrl + "articles/" + articleId + "/opinions";
+    String url = baseUrl + "article/" + articleId + "/opinions";
     print(url);
     try {
       final response = await http.get(
@@ -36,12 +36,12 @@ class Opinions with ChangeNotifier {
         final responseJson = json.decode(response.body);
         for (final opinion in responseJson["opinions"]) {
           fetchedOpinions.add(Opinion(
-            opinion_id: opinion["opinion_id"],
+            opinion_id: opinion["opinion_id"].toString(),
             article_id: opinion["article_id"],
             username: opinion["username"],
             user_profile_image_path: opinion["profile_image_url"],
             content: opinion["content"],
-            opinion_date: opinion["date_created"],
+            opinion_date: DateTime.parse(opinion["date_created"]),
           ));
         }
         _opinions = [...fetchedOpinions];
