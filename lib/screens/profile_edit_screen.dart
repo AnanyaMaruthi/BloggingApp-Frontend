@@ -87,6 +87,7 @@ class _ProfileEditScreenState extends State<ProfileEditScreen> {
                 ),
                 TextFormField(
                   maxLines: 3,
+                  maxLength: 100,
                   controller: _about,
                   decoration: InputDecoration(labelText: 'Description'),
                 ),

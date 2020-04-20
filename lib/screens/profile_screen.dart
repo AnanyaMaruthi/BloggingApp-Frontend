@@ -36,6 +36,7 @@ class _ProfileScreenState extends State<ProfileScreen>
   TabController _tabController;
   ScrollController _scrollController;
   bool _sliverCollapsed = false;
+  double _sliverbarHeight;
 
   final routeObserver = route_observer.routeObserver;
 
@@ -44,6 +45,7 @@ class _ProfileScreenState extends State<ProfileScreen>
     _tabController = TabController(vsync: this, length: 2);
     _scrollController = ScrollController();
     _scrollController.addListener(_scrollListener);
+    _sliverbarHeight = 300;
     super.initState();
   }
 
@@ -101,6 +103,10 @@ class _ProfileScreenState extends State<ProfileScreen>
       setState(() {
         _loadingProfile = false;
         _user = data;
+        setState(() {
+          _sliverbarHeight = 300 + (_user.about.length ~/ 30) * 10.0;
+        });
+        print(_sliverbarHeight);
       });
     }).catchError((errorMessage) {
       showDialog(
@@ -157,7 +163,7 @@ class _ProfileScreenState extends State<ProfileScreen>
                           (BuildContext context, bool innerBoxIsScrolled) {
                         return <Widget>[
                           SliverAppBar(
-                            expandedHeight: 330.0,
+                            expandedHeight: _sliverbarHeight,
                             floating: false,
                             pinned: true,
                             actions: <Widget>[
@@ -219,7 +225,6 @@ class _ProfileScreenState extends State<ProfileScreen>
                                                 Container(
                                                   padding: EdgeInsets.fromLTRB(
                                                       10, 10, 10, 2),
-                                                  // TODO: fix overflow
                                                   child: Text(
                                                     _user.username,
                                                     overflow: TextOverflow.fade,
@@ -264,6 +269,7 @@ class _ProfileScreenState extends State<ProfileScreen>
                                                 .onPrimary,
                                           ),
                                           maxLines: 3,
+                                          overflow: TextOverflow.clip,
                                         ),
                                       ),
                                       Container(
