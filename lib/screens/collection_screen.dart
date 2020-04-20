@@ -282,7 +282,9 @@ class _CollectionScreenState extends State<CollectionScreen>
           ),
         );
       },
-    );
+    ).then((_) {
+      _loadData();
+    });
   }
 
   _showDeleteCollectionDialog(BuildContext context) {

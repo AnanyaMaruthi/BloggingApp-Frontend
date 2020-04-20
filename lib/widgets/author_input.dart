@@ -160,7 +160,6 @@ class _AuthorInputState extends State<AuthorInput> {
         Toast.show("Removed authors successfully!", context,
             duration: 7, gravity: Toast.BOTTOM);
         print("Deleted authors");
-        print(reply);
       }).catchError((errorMessage) {
         print(errorMessage);
         Navigator.of(context).pop();
