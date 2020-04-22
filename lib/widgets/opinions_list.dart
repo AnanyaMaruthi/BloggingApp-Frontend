@@ -1,3 +1,5 @@
+import 'package:bloggingapp/providers/articles.dart';
+
 import '../widgets/opinion_preview_card.dart';
 
 import '../providers/opinions.dart';
@@ -9,7 +11,8 @@ import 'package:toast/toast.dart';
 class OpinionSystem extends StatefulWidget {
 
   String articleId;
-  OpinionSystem(@required this.articleId);
+  bool is_author;
+  OpinionSystem(@required this.articleId );
 
   @override
   _OpinionSystemState createState() => _OpinionSystemState();
@@ -23,7 +26,13 @@ class _OpinionSystemState extends State<OpinionSystem> {
   Widget build(BuildContext context) {
     final opinionsData = Provider.of<Opinions>(context);
     final opinions = opinionsData.opinions;
-    return Card(
+    return (opinions.length == 0
+        ? Center(
+            child: Container(
+              child: Text("No opinions"),
+            ),
+          )
+          :SingleChildScrollView(
       child: Column(
         children: <Widget>[
           Divider(),
@@ -47,10 +56,11 @@ class _OpinionSystemState extends State<OpinionSystem> {
             child: Padding(
               padding: EdgeInsets.fromLTRB(16.0, 16.0, 16.0, 0),
               child: Text(
-                opinions.length.toString() + " Comments",
+                opinions.length.toString() + " Opinions",
               ),
             ),
           ),
+          
           ListView.builder(
             scrollDirection: Axis.vertical,
             shrinkWrap: true,
@@ -62,7 +72,7 @@ class _OpinionSystemState extends State<OpinionSystem> {
           )
         ],
       ),
-    );
+    ));
   }
 
   void _insertOpinion(){
@@ -72,6 +82,7 @@ class _OpinionSystemState extends State<OpinionSystem> {
       //Remove it later. The new opinion should be dsiaplyed on the list
       Toast.show("New opinion added!", context,
             duration: 7, gravity: Toast.BOTTOM);
+      _commentController.text="";
     });
   }
 }

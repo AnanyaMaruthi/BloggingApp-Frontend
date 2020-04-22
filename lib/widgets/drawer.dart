@@ -40,7 +40,7 @@ class MainDrawer extends StatelessWidget {
                 ],
               ),
             ),
-            // child: Image.asset('assets/images/logo1.png'),
+             child: Image.asset('assets/images/logo1.png'),
           ),
           ListTile(
               leading: Icon(Icons.person),

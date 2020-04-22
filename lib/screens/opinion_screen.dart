@@ -1,11 +1,15 @@
 import 'dart:convert';
 import 'dart:io';
+import 'package:bloggingapp/providers/article.dart';
+import 'package:bloggingapp/providers/articles.dart';
 import 'package:bloggingapp/providers/opinion.dart';
 import 'package:bloggingapp/providers/opinions.dart';
+import 'package:bloggingapp/widgets/drawer.dart';
 import 'package:bloggingapp/widgets/error_dialog.dart';
 import 'package:bloggingapp/widgets/opinions_list.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:provider/provider.dart';
 
 import 'package:http/http.dart' as http;
@@ -28,14 +32,15 @@ class _OpinionScreenState extends State<OpinionScreen> {
   
   final TextEditingController _commentController = TextEditingController();
   bool _loadingOpinions = true;
-  bool _isInit = true;
   bool _errorOpinions = false;
   bool _errorReplies = false;
   Opinion _opinions;
+  Article _article;
 
+  bool _loading = true;
+  bool _isInit = true;
+  bool _error = false;
 
-  Future<http.Response> _responseFuture;
-  final storage = FlutterSecureStorage();
 
 void initState() {
     super.initState();
@@ -46,150 +51,113 @@ void initState() {
     
 }
 
-//  @override
-//   void didChangeDependencies() {
-//     if (_isInit) {
-//       _loadData();
-//       setState(() {
-//         _isInit = false;
-//       });
-//     }
-//     super.didChangeDependencies();
-//   }
+ @override
+  void didChangeDependencies() {
+    if (_isInit) {
+      _loadData();
+      setState(() {
+        _isInit = false;
+      });
+    }
+    super.didChangeDependencies();
+  }
 
-    // Future<void> _loadData() async {
-    //   final token = await storage.read(key: "token");
-    // String url = baseUrl + "articles/" + widget.articleId + "opinions";
-    // _responseFuture = http.get(url,headers: {HttpHeaders.authorizationHeader: token},);
-    // }
-// // Get Opinions
-//     Provider.of<Opinions>(context).getOpinions(widget.articleId).then((data) {
-//       setState(() {
-//         _loadingOpinions = false;
-//         //_opinions = data;
-//       });
-//     }).catchError((errorMessage) {
-//       showDialog(
-//           context: context,
-//           builder: (BuildContext context) {
-//             return ErrorDialog(
-//               errorMessage: errorMessage,
-//             );
-//           });
-//       setState(() {
-//         _errorOpinions= true;
-//       });
-//     });
-//    }
+void _loadData() {
+    Provider.of<Opinions>(context).getOpinions(widget.articleId).then((_) {
+      setState(() {
+        _loading = false;
+      });
+    }).catchError((errorMessage) {
+      showDialog(
+          context: context,
+          builder: (BuildContext context) {
+            return ErrorDialog(
+              errorMessage: errorMessage,
+            );
+          });
+      setState(() {
+        _error = true;
+      });
+    });
+    Provider.of<Articles>(context)
+        .getArticleById(widget.articleId)
+        .then((article) {
+      setState(() {
+        _loading = false;
+        _article = article;
+      });
+    }).catchError((errorMessage) {
+      showDialog(
+          context: context,
+          builder: (BuildContext context) {
+            return ErrorDialog(
+              errorMessage: errorMessage,
+            );
+          });
+      setState(() {
+        _error = true;
+      });
+    });
+  }
 
-Widget build(BuildContext context){
-   final opinions = Provider.of<Opinions>(context).getOpinions(widget.articleId);
-   print("in opinion page");
-   return new Scaffold(
-      appBar: new AppBar(
-        title: new Text('Opinions'),
-      ),
-      body: 
-      // new FutureBuilder(
-      //   future: Provider.of<Opinions>(context).getOpinions(widget.articleId) ,
-      //   builder: (BuildContext context, response) {
-      //     if (!response.hasData) {
-      //       return const Center(
-      //         child: const Text('Loading...'),
-      //       );
-      //     } else {
-      //       //final responseJson = json.decode(response.data.body);
-      //       print(response);
-            // return const Center(
-            //   child: const Text('gotcha'),
-            // );
-               new OpinionSystem(widget.articleId),
-                  //     }
-                  //   },
-                  // ),
+// Widget build(BuildContext context){
+//    final opinions = Provider.of<Opinions>(context).getOpinions(widget.articleId);
+//    print("in opinion page");
+//    return new Scaffold(
+//       appBar: new AppBar(
+//         title: new Text('Opinions'),
+//       ),
+//       body: 
+//       // new FutureBuilder(
+//       //   future: Provider.of<Opinions>(context).getOpinions(widget.articleId) ,
+//       //   builder: (BuildContext context, response) {
+//       //     if (!response.hasData) {
+//       //       return const Center(
+//       //         child: const Text('Loading...'),
+//       //       );
+//       //     } else {
+//       //       //final responseJson = json.decode(response.data.body);
+//       //       print(response);
+//             // return const Center(
+//             //   child: const Text('gotcha'),
+//             // );
+//                new OpinionSystem(widget.articleId),
+//                   //     }
+//                   //   },
+//                   // ),
                   
-                );
-              }
+//                 );
+//               }
+// }
+
+Widget build(BuildContext context) {
+    return Scaffold(
+      backgroundColor: Color(0xfff3f7f6),
+      appBar: AppBar(
+        title: Text('Opinions'),
+        flexibleSpace: Container(
+          decoration: BoxDecoration(
+            gradient: LinearGradient(
+                begin: Alignment.topLeft,
+                end: Alignment.bottomRight,
+                colors: [
+                  Color(0xff191654),
+                  Color(0xff43c6ac),
+                  // Color(0xff6dffe1),
+                ]),
+          ),
+        ),
+      ),
+      body: (_error == false
+          ? (_loading == true
+              ? SpinKitWanderingCubes(
+                  color: Theme.of(context).primaryColor,
+                )
+              : new OpinionSystem(widget.articleId))
+          : Center(
+              child: Text("An error occured..."),
+            )),
+     
+    );
+  }
 }
-
-// class OpinionList extends StatelessWidget {
-//   final List<dynamic> opinionList;
-
-//   OpinionList(this.opinionList);
-
-//   List<Widget> _getChildren() {
-//     List<Widget> children = [];
-//     opinionList.forEach((element) {
-//       children.add(
-//         new ReplyTile(element['opinionId']),
-//       );
-//     });
-//     return children;
-//   }
-
-//   @override
-//   Widget build(BuildContext context) {
-//     return new ListView(
-//       children: _getChildren(),
-//     );
-//   }
-// }
-
-// class ReplyTile extends StatefulWidget {
- 
-//   final String opinionId;
-//   ReplyTile(this.opinionId);
-//   OpinionScreen _opinionScreen;
-//   @override
-//   State createState() => new ReplyTileState();
-// }
-
-// class ReplyTileState extends State<ReplyTile> {
-//   PageStorageKey _key;
-//   Future<http.Response> _responseFuture;
-
-//   @override
-//   void initState() {
-//     super.initState();
-//     String url = baseUrl + "articles/" + widget._opinionScreen.articleId + "/opinions/" + widget.opinionId;
-//     _responseFuture =
-//         http.get(url);
-//   }
-
-//   @override
-//   Widget build(BuildContext context) {
-//     _key = new PageStorageKey('${widget.opinionId}');
-//     return new ExpansionTile(
-//       key: _key,
-//       title: new Text("View Replies"),
-//       children: <Widget>[
-//         new FutureBuilder(
-//           future: _responseFuture,
-//           builder:
-//               (BuildContext context, AsyncSnapshot<http.Response> response) {
-//             if (!response.hasData) {
-//               return const Center(
-//                 child: const Text('Loading...'),
-//               );
-//             } else if (response.data.statusCode != 200) {
-//               return const Center(
-//                 child: const Text('Error loading data'),
-//               );
-//             } else {
-//               List<dynamic> responseJson = json.decode(response.data.body);
-//               List<Widget> replyList = [];
-//               responseJson.forEach((element) {
-//                 replyList.add(new ListTile(
-//                   dense: true,
-//                   title: new Text(element['content']),
-//                 ));
-//               });
-//               return new Column(children: replyList);
-//             }
-//           },
-//         )
-//       ],
-//     );
-// }
-
-//}

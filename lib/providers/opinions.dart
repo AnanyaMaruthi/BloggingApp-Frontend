@@ -20,6 +20,12 @@ class Opinions with ChangeNotifier {
   List<Opinion> _opinions = [];
   List<Opinion> _replies = [];
 
+ Future<void> deleteOpinion(String opinionId) async {
+    print("Delete from screen");
+    _opinions.removeWhere((opinion) => opinion.opinion_id == opinionId);
+    notifyListeners();
+  }
+
   // Get Opinions of an article
   Future<void> getOpinions(String articleId) async {
     List<Opinion> fetchedOpinions = [];
@@ -35,16 +41,18 @@ class Opinions with ChangeNotifier {
       if (response.statusCode == 200) {
         final responseJson = json.decode(response.body);
         print(responseJson);
-        for (final opinion in responseJson["opinions"]) {
+        for (final opinion in responseJson) {
           fetchedOpinions.add(Opinion(
             opinion_id: opinion["opinion_id"].toString(),
             article_id: opinion["article_id"],
             username: opinion["username"],
+            user_id: opinion["user_id"].toString(),
             user_profile_image_path: opinion["profile_image_url"],
             content: opinion["content"],
             opinion_date: DateTime.parse(opinion["date_created"]),
           ));
         }
+        print(fetchedOpinions);
         _opinions = [...fetchedOpinions];
         notifyListeners();
       } else if (response.statusCode == 404) {
@@ -115,6 +123,7 @@ class Opinions with ChangeNotifier {
             user_profile_image_path: opinion["profile_image_url"],
             content: opinion["content"],
             opinion_date: opinion["date_created"],
+            user_id: opinion["user_id"].toString(),
           ));
         }
         _replies = [...fetchedReplies];
